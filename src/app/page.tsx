@@ -35,7 +35,7 @@ export default function HomePage() {
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.02 }}
+          transition={{ delay: 0 }}
           className="text-gray-400 text-lg"
         >
           Generate specialized prompts with our intelligent tools
