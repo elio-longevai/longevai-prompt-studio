@@ -78,6 +78,17 @@ export default function GeneratorPage() {
       .catch(err => console.log('Could not load LAI context:', err));
   }, [params.id]);
 
+  useEffect(() => {
+    if (params.id === 'proposal-generator' && selectedProposalType) {
+      const templateId = selectedProposalType === 'html' ? 'html_template' : 'md_template';
+      const defaultTemplateName = formData[templateId];
+      if (defaultTemplateName) {
+        loadTemplateContent(defaultTemplateName);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProposalType, params.id]);
+
   const handleInputChange = (id: string, value: string) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
     
@@ -197,8 +208,15 @@ export default function GeneratorPage() {
         userPrompt += `<longevai_context>\n${longevaiContextContent || ''}\n</longevai_context>\n\n`;
       }
 
+      // Separate the main task/instruction input
+      const mainInstructionInputId = 'task'; // Or 'instructions', adjust if needed
+      let mainInstructionContent = '';
+
       tileData.inputs.forEach((input) => {
-        if (input.type !== 'document_upload' && formData[input.id]) {
+        if (input.id === mainInstructionInputId) {
+          mainInstructionContent = formData[input.id] || '';
+        } else if (input.type !== 'document_upload' && formData[input.id]) {
+          // Add all other inputs first
           userPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
         }
       });
@@ -208,10 +226,15 @@ export default function GeneratorPage() {
         documents.forEach((doc) => {
           if (doc.name && doc.content) {
             const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n\n`;
+            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n`;
           }
         });
-        userPrompt += '</context_docs>\n';
+        userPrompt += '</context_docs>\n\n';
+      }
+
+      // Append the main task/instruction at the very end
+      if (mainInstructionContent) {
+        userPrompt += `<${mainInstructionInputId}>\n${mainInstructionContent}\n</${mainInstructionInputId}>\n`;
       }
     }
     
