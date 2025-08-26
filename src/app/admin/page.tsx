@@ -77,7 +77,7 @@ export default function AdminPage() {
 
         <div className="space-y-8">
           {tiles.map((tile, tileIndex) => (
-            <Card key={tile.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-2xl p-6">
+            <Card key={tile.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-2xl p-4">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold text-primary mb-2">{tile.title}</h2>
                 <p className="text-gray-400 text-sm">ID: {tile.id}</p>
@@ -241,7 +241,7 @@ export default function AdminPage() {
             )}
           </Button>
 
-          <Card className="bg-gray-800/50 border-gray-700 rounded-xl p-6">
+          <Card className="bg-gray-800/50 border-gray-700 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-gray-200 mb-3">Export Configuration</h3>
             <p className="text-sm text-gray-400 mb-4">
               Copy the updated JSON content below and manually replace the contents of <code className="bg-gray-700 px-2 py-1 rounded">src/data/tiles.json</code> in the codebase.

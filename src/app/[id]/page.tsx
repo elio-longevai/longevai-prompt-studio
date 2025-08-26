@@ -305,7 +305,7 @@ export default function GeneratorPage() {
             >
               <Card className="relative bg-gray-800/60 backdrop-blur-lg border border-gray-700/50 hover:border-primary/40 rounded-3xl p-10 overflow-hidden group">
                 {/* Subtle hover glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 {/* Header Section */}
                 <div className="relative mb-4">

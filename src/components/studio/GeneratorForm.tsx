@@ -55,7 +55,7 @@ export function GeneratorForm({
           }
 
           return (
-            <Card key={input.id} className="bg-gray-800/50 border-gray-700 p-6">
+            <Card key={input.id} className="bg-gray-800/50 border-gray-700 p-4">
               <label className="block text-sm font-medium text-gray-300 mb-3">
                 {input.label}
                 {input.required && <span className="text-red-400 ml-1">*</span>}

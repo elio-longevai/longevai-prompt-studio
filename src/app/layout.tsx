@@ -28,9 +28,9 @@ export default function RootLayout({
         <meta name="description" content="Generate specialized prompts for LongevAI projects." />
       </head>
       {/* Apply dark theme globally for this example */}
-      <body className="dark bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+      <body className="dark bg-gray-950 text-gray-100 h-screen flex flex-col">
         {/* Header */}
-        <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-gray-950/70 backdrop-blur-md">
+        <header className="flex-shrink-0 w-full border-b border-primary/20 bg-gray-950/70 backdrop-blur-md">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-xl font-bold text-primary hover:text-primary/90 transition-colors duration-300">
               <Sparkles size={24} className="text-primary" />
@@ -52,7 +52,7 @@ export default function RootLayout({
         </header>
 
         {/* Main Content Area - Takes remaining height */}
-        <main className="flex-grow overflow-hidden"> {/* Prevent main from scrolling */}
+        <main className="flex-grow overflow-auto">
           {children}
         </main>
 
