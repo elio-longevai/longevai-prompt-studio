@@ -6,8 +6,19 @@
     "icon": "Presentation",
     "system_prompt": "You are an expert programmer.\nYour task is to create an exceptional prompt for my AI coder that I can provide it without additional context to implement the task defined in the user instructions into the provided slide template codebase. This prompt should only contain the high-level goal as well as the changes to be made, not full code files.\nBefore generating this prompt, if required, ask me the top 3 potentially relevant questions you need to come to the best possible output.\nDon't generate a preamble or other surrounding text, only return the prompt OR the questions.",
     "inputs": [
-      { "id": "task", "label": "Task / Goal of Slides", "type": "textarea", "placeholder": "e.g., Create a 5-slide presentation on our Q3 roadmap...", "required": true },
-      { "id": "context_docs", "label": "Context Documents", "type": "document_upload", "required": false }
+      {
+        "id": "task",
+        "label": "Task / Goal of Slides",
+        "type": "textarea",
+        "placeholder": "e.g., Create a 5-slide presentation on our Q3 roadmap...",
+        "required": true
+      },
+      {
+        "id": "context_docs",
+        "label": "Context Documents",
+        "type": "document_upload",
+        "required": false
+      }
     ],
     "output": {
       "copy_button_text": "Copy Coder Prompt",
@@ -20,12 +31,35 @@
     "title": "E-mail Generator",
     "description": "Generate professional e-mails with LongevAI branding.",
     "icon": "Mail",
-    "system_prompt": "You are an expert e-mail writer. Generate an e-mail in HTML format based on the user instructions. The main LongevAI color (for headers) is #8CC63F.",
+    "system_prompt": "You are an expert e-mail writer. Generate an e-mail in HTML format based on the user instructions. The main LongevAI color (for headers) is #8CC63F. Let the user know they can paste the HTML into https://html.onlineviewer.net/, to then copy the right side of the screen to their e-mail client.",
     "inputs": [
-      { "id": "previous_emails", "label": "Previous E-mails (for context)", "type": "textarea", "placeholder": "Paste the thread of previous emails here...", "required": false },
-      { "id": "writing_style_examples", "label": "Example E-mails (for writing style)", "type": "textarea", "placeholder": "Paste examples of emails that have the desired tone...", "required": false },
-      { "id": "context_docs", "label": "Other Context Documents", "type": "document_upload", "required": false },
-      { "id": "task", "label": "Task / Goal of E-mail", "type": "textarea", "placeholder": "e.g., Write a follow-up email to John Doe about our proposal...", "required": true }
+      {
+        "id": "previous_emails",
+        "label": "Previous E-mails (for context)",
+        "type": "textarea",
+        "placeholder": "Paste the thread of previous emails here...",
+        "required": false
+      },
+      {
+        "id": "writing_style_examples",
+        "label": "Example E-mails (for writing style)",
+        "type": "textarea",
+        "placeholder": "Paste examples of emails that have the desired tone...",
+        "required": false
+      },
+      {
+        "id": "context_docs",
+        "label": "Other Context Documents",
+        "type": "document_upload",
+        "required": false
+      },
+      {
+        "id": "task",
+        "label": "Task / Goal of E-mail",
+        "type": "textarea",
+        "placeholder": "e.g., Write a follow-up email to John Doe about our proposal...",
+        "required": true
+      }
     ],
     "output": {
       "copy_button_text": "Copy E-mail HTML",
@@ -43,14 +77,79 @@
       "markdown": "You are a senior business strategist and proposal writer. You will receive a detailed Markdown proposal template and specific instructions for a new client. Your task is to thoroughly adapt the template to create a new, comprehensive, and persuasive proposal with appropriate modules in a logical order. Modify sections, rewrite content, and ensure the final document is perfectly tailored to the new client's context. Your final output should be only the raw, updated Markdown."
     },
     "inputs": [
-      { "id": "business_name", "path": "both", "label": "Business Name", "type": "text", "placeholder": "e.g., Example Corp", "required": true },
-      { "id": "business_context", "path": "both", "label": "Business Context", "type": "textarea", "placeholder": "Provide some background on the business and their needs.", "required": true },
-      { "id": "html_template", "path": "html", "label": "Select HTML Template", "type": "select", "options": ["maa.html", "general.html", "custom"], "default": "general.html", "required": true },
-      { "id": "custom_html_template", "path": "html", "label": "Custom HTML Template (Optional)", "type": "textarea", "placeholder": "Paste your own complete HTML template here to override the default.", "required": false },
-      { "id": "md_template", "path": "markdown", "label": "Select Markdown Template", "type": "select", "options": ["myactiveage.md", "qualevita.md", "custom"], "default": "myactiveage.md", "required": true },
-      { "id": "custom_md_template", "path": "markdown", "label": "Custom Markdown Template (Optional)", "type": "textarea", "placeholder": "Paste your own complete Markdown template here to override the default.", "required": false },
-      { "id": "context_docs", "path": "both", "label": "Other Context Documents", "type": "document_upload", "required": false },
-      { "id": "instructions", "path": "both", "label": "Detailed Instructions & Context for proposal", "type": "textarea", "placeholder": "Provide all necessary context, changes, and client details to adapt the selected template...", "required": true }
+      {
+        "id": "business_name",
+        "path": "both",
+        "label": "Business Name",
+        "type": "text",
+        "placeholder": "e.g., Example Corp",
+        "required": true
+      },
+      {
+        "id": "business_context",
+        "path": "both",
+        "label": "Business Context",
+        "type": "textarea",
+        "placeholder": "Provide some background on the business and their needs.",
+        "required": true
+      },
+      {
+        "id": "html_template",
+        "path": "html",
+        "label": "Select HTML Template",
+        "type": "select",
+        "options": [
+          "maa.html",
+          "general.html",
+          "custom"
+        ],
+        "default": "general.html",
+        "required": true
+      },
+      {
+        "id": "custom_html_template",
+        "path": "html",
+        "label": "Custom HTML Template (Optional)",
+        "type": "textarea",
+        "placeholder": "Paste your own complete HTML template here to override the default.",
+        "required": false
+      },
+      {
+        "id": "md_template",
+        "path": "markdown",
+        "label": "Select Markdown Template",
+        "type": "select",
+        "options": [
+          "myactiveage.md",
+          "qualevita.md",
+          "custom"
+        ],
+        "default": "myactiveage.md",
+        "required": true
+      },
+      {
+        "id": "custom_md_template",
+        "path": "markdown",
+        "label": "Custom Markdown Template (Optional)",
+        "type": "textarea",
+        "placeholder": "Paste your own complete Markdown template here to override the default.",
+        "required": false
+      },
+      {
+        "id": "context_docs",
+        "path": "both",
+        "label": "Other Context Documents",
+        "type": "document_upload",
+        "required": false
+      },
+      {
+        "id": "instructions",
+        "path": "both",
+        "label": "Detailed Instructions & Context for proposal",
+        "type": "textarea",
+        "placeholder": "Provide all necessary context, changes, and client details to adapt the selected template...",
+        "required": true
+      }
     ],
     "output": {
       "copy_button_text": "Copy Proposal Prompt",
@@ -65,10 +164,39 @@
     "icon": "Users",
     "system_prompt": "Summarize this meeting exceptionally well using stunning, beautiful markdown formatting including emojis and tables. Create a list of action points at the end of the summary in a table, including deadlines and owners. The summary detail level should be {{COMPREHENSIVENESS}}.",
     "inputs": [
-      { "id": "transcript", "label": "Transcript of Meeting", "type": "textarea", "placeholder": "Paste the full meeting transcript here...", "required": true },
-      { "id": "comprehensiveness", "label": "How comprehensive?", "type": "select", "options": ["Balanced", "Comprehensive", "Concise"], "default": "Balanced", "required": true },
-      { "id": "new_names", "label": "New Names (Companies, people, tech)", "type": "textarea", "placeholder": "List any new names not in the LongevAI knowledge base to ensure correct transcription.", "required": false },
-      { "id": "example_output", "label": "Example Output Format", "type": "textarea", "placeholder": "Describe the desired output format or provide a structural example.", "required": false }
+      {
+        "id": "transcript",
+        "label": "Transcript of Meeting",
+        "type": "textarea",
+        "placeholder": "Paste the full meeting transcript here...",
+        "required": true
+      },
+      {
+        "id": "comprehensiveness",
+        "label": "How comprehensive?",
+        "type": "select",
+        "options": [
+          "Balanced",
+          "Comprehensive",
+          "Concise"
+        ],
+        "default": "Balanced",
+        "required": true
+      },
+      {
+        "id": "new_names",
+        "label": "New Names (Companies, people, tech)",
+        "type": "textarea",
+        "placeholder": "List any new names not in the LongevAI knowledge base to ensure correct transcription.",
+        "required": false
+      },
+      {
+        "id": "example_output",
+        "label": "Example Output Format",
+        "type": "textarea",
+        "placeholder": "Describe the desired output format or provide a structural example.",
+        "required": false
+      }
     ],
     "output": {
       "copy_button_text": "Copy Summary Prompt",
