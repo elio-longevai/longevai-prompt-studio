@@ -9,17 +9,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Plus, X, Check } from 'lucide-react';
 import tilesData from '@/data/tiles.json';
+import { templateLoader } from '@/lib/templateLoader';
 
 interface TileData {
   id: string;
   title: string;
   description: string;
   icon: string;
-  system_prompt: string;
+  system_prompt?: string;
+  system_prompts?: {
+    html?: string;
+    markdown?: string;
+  };
   inputs: Array<{
     id: string;
     label: string;
     type: string;
+    path?: string;
     placeholder?: string;
     required?: boolean;
     options?: string[];
@@ -44,8 +50,9 @@ export default function GeneratorPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [includeLAIContext, setIncludeLAIContext] = useState(true);
   const [showToast, setShowToast] = useState(false);
-  // const [generatedPrompt, setGeneratedPrompt] = useState<{ system: string; user: string } | null>(null);
   const [longevaiContextContent, setLongevaiContextContent] = useState<string>('');
+  const [selectedProposalType, setSelectedProposalType] = useState<'html' | 'markdown' | null>(null);
+  const [templateContent, setTemplateContent] = useState<string>('');
 
   useEffect(() => {
     const tile = tilesData.find((t) => t.id === params.id);
@@ -55,7 +62,7 @@ export default function GeneratorPage() {
       tile.inputs.forEach((input) => {
         if ('default' in input && input.default) {
           initialData[input.id] = input.default as string;
-        } else if (input.type === 'select' && input.options) {
+        } else if (input.type === 'select' && 'options' in input && Array.isArray(input.options) && input.options.length > 0) {
           initialData[input.id] = input.options[0];
         } else {
           initialData[input.id] = '';
@@ -73,6 +80,21 @@ export default function GeneratorPage() {
 
   const handleInputChange = (id: string, value: string) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
+    
+    // Handle template loading when template selection changes
+    if (id === 'html_template' || id === 'md_template') {
+      loadTemplateContent(value);
+    }
+  };
+
+  const loadTemplateContent = async (templateName: string) => {
+    try {
+      const content = await templateLoader.loadTemplate(templateName);
+      setTemplateContent(content);
+    } catch (error) {
+      console.log('Could not load template:', error);
+      setTemplateContent('');
+    }
   };
 
   const handleAddDocument = () => {
@@ -101,7 +123,14 @@ export default function GeneratorPage() {
 
   const isFormValid = () => {
     if (!tileData) return false;
-    return tileData.inputs.every((input) => {
+    if (params.id === 'proposal-generator' && !selectedProposalType) return false;
+    
+    const relevantInputs = tileData.inputs.filter((input) => {
+      if (params.id !== 'proposal-generator') return true;
+      return input.path === 'both' || input.path === selectedProposalType;
+    });
+    
+    return relevantInputs.every((input) => {
       if (!input.required) return true;
       if (input.type === 'document_upload') return true;
       return formData[input.id] && formData[input.id].trim() !== '';
@@ -111,36 +140,80 @@ export default function GeneratorPage() {
   const generatePrompt = () => {
     if (!tileData) return;
 
-    let systemPrompt = tileData.system_prompt;
-    Object.keys(formData).forEach((key) => {
-      const placeholder = `{{${key.toUpperCase()}}}`;
-      systemPrompt = systemPrompt.replace(placeholder, formData[key]);
-    });
-
+    let systemPrompt = '';
     let userPrompt = '';
-    
-    if (includeLAIContext) {
-      userPrompt += `<longevai_context>\n${longevaiContextContent || ''}\n</longevai_context>\n\n`;
-    }
 
-    tileData.inputs.forEach((input) => {
-      if (input.type !== 'document_upload' && formData[input.id]) {
-        userPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
+    if (params.id === 'proposal-generator') {
+      // Handle dual-path proposal generation
+      if (selectedProposalType === 'html') {
+        systemPrompt = tileData.system_prompts?.html || '';
+        
+        userPrompt = '<longevai_context>\n' + (longevaiContextContent || '') + '\n</longevai_context>\n\n';
+        
+        const htmlTemplate = formData.custom_html_template || templateContent;
+        userPrompt += '<base_html_template>\n<![CDATA[\n' + htmlTemplate + '\n]]>\n</base_html_template>\n\n';
+        
+      } else if (selectedProposalType === 'markdown') {
+        systemPrompt = tileData.system_prompts?.markdown || '';
+        
+        userPrompt = '<longevai_context>\n' + (longevaiContextContent || '') + '\n</longevai_context>\n\n';
+        
+        const mdTemplate = formData.custom_md_template || templateContent;
+        userPrompt += '<markdown_template>\n' + mdTemplate + '\n</markdown_template>\n\n';
       }
-    });
 
-    if (documents.length > 0) {
-      userPrompt += '<context_docs>\n';
-      documents.forEach((doc) => {
-        if (doc.name && doc.content) {
-          const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-          userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n\n`;
+      // Add context documents
+      if (documents.length > 0) {
+        userPrompt += '<context_docs>\n';
+        documents.forEach((doc) => {
+          if (doc.name && doc.content) {
+            const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n\n`;
+          }
+        });
+        userPrompt += '</context_docs>\n\n';
+      }
+
+      // Add business context fields
+      if (formData.business_name) {
+        userPrompt += `<business_name>\n${formData.business_name}\n</business_name>\n\n`;
+      }
+      if (formData.business_context) {
+        userPrompt += `<business_context>\n${formData.business_context}\n</business_context>\n\n`;
+      }
+      if (formData.instructions) {
+        userPrompt += `<instructions>\n${formData.instructions}\n</instructions>\n\n`;
+      }
+
+    } else {
+      // Handle other generators (existing logic)
+      systemPrompt = tileData.system_prompt || '';
+      Object.keys(formData).forEach((key) => {
+        const placeholder = `{{${key.toUpperCase()}}}`;
+        systemPrompt = systemPrompt.replace(placeholder, formData[key]);
+      });
+
+      if (includeLAIContext) {
+        userPrompt += `<longevai_context>\n${longevaiContextContent || ''}\n</longevai_context>\n\n`;
+      }
+
+      tileData.inputs.forEach((input) => {
+        if (input.type !== 'document_upload' && formData[input.id]) {
+          userPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
         }
       });
-      userPrompt += '</context_docs>\n';
-    }
 
-    // setGeneratedPrompt({ system: systemPrompt, user: userPrompt.trim() });
+      if (documents.length > 0) {
+        userPrompt += '<context_docs>\n';
+        documents.forEach((doc) => {
+          if (doc.name && doc.content) {
+            const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n\n`;
+          }
+        });
+        userPrompt += '</context_docs>\n';
+      }
+    }
     
     navigator.clipboard.writeText(userPrompt.trim());
     setShowToast(true);
@@ -160,68 +233,172 @@ export default function GeneratorPage() {
     );
   }
 
+  // Proposal Generator: Show type selector first
+  if (params.id === 'proposal-generator' && !selectedProposalType) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Link href="/">
+            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-primary">
+              <ArrowLeft className="mr-2 w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+
+          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-3xl p-8">
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl font-bold text-gray-100 mb-2">{tileData.title}</h1>
+              <p className="text-gray-400 mb-6">{tileData.description}</p>
+              <h2 className="text-xl font-semibold text-gray-200 mb-4">What type of proposal do you want to create?</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Card 
+                  className="p-6 bg-gray-700/30 border-gray-600 hover:border-primary/50 transition-all duration-200 cursor-pointer"
+                  onClick={() => setSelectedProposalType('html')}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="p-4 bg-primary/10 rounded-2xl mx-auto w-fit">
+                      <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-100">HTML Overview</h3>
+                    <p className="text-gray-400 text-sm">For creating a high-level, visually impressive web-based summary.</p>
+                  </div>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Card 
+                  className="p-6 bg-gray-700/30 border-gray-600 hover:border-primary/50 transition-all duration-200 cursor-pointer"
+                  onClick={() => setSelectedProposalType('markdown')}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="p-4 bg-primary/10 rounded-2xl mx-auto w-fit">
+                      <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-100">Detailed Markdown Proposal</h3>
+                    <p className="text-gray-400 text-sm">For generating a comprehensive, structured document based on a template.</p>
+                  </div>
+                </Card>
+              </motion.div>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Link href="/">
-          <Button variant="ghost" className="mb-6 text-gray-400 hover:text-primary">
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            Back to Dashboard
-          </Button>
-        </Link>
+      <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Link href="/">
+            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-primary">
+              <ArrowLeft className="mr-2 w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
 
-        <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-3xl p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-100 mb-2">{tileData.title}</h1>
-            <p className="text-gray-400">{tileData.description}</p>
-          </div>
-
-          <div className="space-y-6">
-            {tileData.inputs.map((input) => (
-              <div key={input.id}>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {input.label}
-                  {input.required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-                
-                {input.type === 'text' && (
-                  <input
-                    type="text"
-                    value={formData[input.id] || ''}
-                    onChange={(e) => handleInputChange(input.id, e.target.value)}
-                    placeholder={input.placeholder}
-                    className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 placeholder-gray-500 focus:border-primary focus:outline-none"
-                  />
-                )}
-                
-                {input.type === 'textarea' && (
-                  <Textarea
-                    value={formData[input.id] || ''}
-                    onChange={(e) => handleInputChange(input.id, e.target.value)}
-                    placeholder={input.placeholder}
-                    className="w-full min-h-[100px] bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-primary rounded-xl"
-                  />
-                )}
-                
-                {input.type === 'select' && (
-                  <select
-                    value={formData[input.id] || ''}
-                    onChange={(e) => handleInputChange(input.id, e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 focus:border-primary focus:outline-none"
+          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-3xl p-8">
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-100 mb-2">
+                    {tileData.title}
+                    {params.id === 'proposal-generator' && selectedProposalType && (
+                      <span className="text-primary ml-2">
+                        ({selectedProposalType === 'html' ? 'HTML Overview' : 'Markdown Proposal'})
+                      </span>
+                    )}
+                  </h1>
+                  <p className="text-gray-400">{tileData.description}</p>
+                </div>
+                {params.id === 'proposal-generator' && (
+                  <Button
+                    variant="outline" 
+                    onClick={() => setSelectedProposalType(null)}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700/50"
                   >
-                    {input.options?.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                    Change Type
+                  </Button>
                 )}
-                
-                {input.type === 'document_upload' && (
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {tileData.inputs
+                .filter((input) => {
+                  if (params.id !== 'proposal-generator') return true;
+                  return input.path === 'both' || input.path === selectedProposalType;
+                })
+                .map((input) => {
+                  // Hide custom template fields unless 'custom' is selected
+                  if ((input.id === 'custom_html_template' && formData.html_template !== 'custom') ||
+                      (input.id === 'custom_md_template' && formData.md_template !== 'custom')) {
+                    return null;
+                  }
+                  
+                  return (
+                    <div key={input.id}>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        {input.label}
+                        {input.required && <span className="text-red-500 ml-1">*</span>}
+                      </label>
+                      
+                      {input.type === 'text' && (
+                        <input
+                          type="text"
+                          value={formData[input.id] || ''}
+                          onChange={(e) => handleInputChange(input.id, e.target.value)}
+                          placeholder={input.placeholder}
+                          className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 placeholder-gray-500 focus:border-primary focus:outline-none"
+                        />
+                      )}
+                      
+                      {input.type === 'textarea' && (
+                        <Textarea
+                          value={formData[input.id] || ''}
+                          onChange={(e) => handleInputChange(input.id, e.target.value)}
+                          placeholder={input.placeholder}
+                          className="w-full min-h-[100px] bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-primary rounded-xl"
+                        />
+                      )}
+                      
+                      {input.type === 'select' && (
+                        <select
+                          value={formData[input.id] || ''}
+                          onChange={(e) => handleInputChange(input.id, e.target.value)}
+                          className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 focus:border-primary focus:outline-none"
+                        >
+                          {input.options?.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                      
+                      {input.type === 'document_upload' && (
                   <div className="space-y-3">
                     {documents.map((doc, index) => (
                       <Card key={index} className="bg-gray-700/30 border-gray-600 p-4">
@@ -278,11 +455,13 @@ export default function GeneratorPage() {
                       Add Document
                     </Button>
                   </div>
-                )}
-              </div>
-            ))}
-
-            <div className="flex items-center space-x-3 py-4">
+                        )}
+                      
+                    </div>
+                  )
+                })}
+              
+              <div className="flex items-center space-x-3 py-4">
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -304,7 +483,8 @@ export default function GeneratorPage() {
             </Button>
           </div>
         </Card>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <AnimatePresence>
         {showToast && (
