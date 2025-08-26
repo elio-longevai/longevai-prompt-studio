@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import tilesData from '@/data/tiles.json';
 import { templateLoader } from '@/lib/templateLoader';
 import { ProposalTypeSelector } from '@/components/studio/ProposalTypeSelector';
@@ -260,7 +260,7 @@ export default function GeneratorPage() {
           transition={{ duration: 0.3 }}
         >
           <Link href="/">
-            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-primary">
+            <Button variant="ghost" className="mb-2 text-gray-400 hover:text-primary">
               <ArrowLeft className="mr-2 w-4 h-4" />
               Back to Dashboard
             </Button>
@@ -273,89 +273,167 @@ export default function GeneratorPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <AnimatePresence mode="wait">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Link href="/">
-            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-primary">
-              <ArrowLeft className="mr-2 w-4 h-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
+    <div className="relative min-h-screen">
+      {/* Inspiring background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(140,198,63,0.05),transparent_70%)]" />
+      </div>
 
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-2xl p-8">
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-100 mb-2">
-                    {tileData.title}
-                    {params.id === 'proposal-generator' && selectedProposalType && (
-                      <span className="text-primary ml-2">
-                        ({selectedProposalType === 'html' ? 'HTML Overview' : 'Markdown Proposal'})
-                      </span>
-                    )}
-                  </h1>
-                  <p className="text-gray-400">{tileData.description}</p>
-                </div>
-                {params.id === 'proposal-generator' && (
-                  <Button
-                    variant="outline" 
-                    onClick={() => setSelectedProposalType(null)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700/50"
-                  >
-                    Change Type
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <GeneratorForm
-              inputs={tileData.inputs}
-              formData={formData}
-              documents={documents}
-              selectedProposalType={selectedProposalType}
-              isTemplateLoading={isTemplateLoading}
-              templateError={templateError}
-              onInputChange={handleInputChange}
-              onAddDocument={handleAddDocument}
-              onRemoveDocument={handleRemoveDocument}
-              onDocumentChange={handleDocumentChange}
-            />
-            
-            <div className="flex items-center space-x-3 py-4">
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeLAIContext}
-                  onChange={(e) => setIncludeLAIContext(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                <span className="ml-3 text-sm font-medium text-gray-300">Include LongevAI Context</span>
-              </label>
-            </div>
-
-            <Button
-              onClick={generatePrompt}
-              disabled={!isFormValid()}
-              className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="relative z-10 container mx-auto px-4 py-4 max-w-4xl">
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, type: 'spring', damping: 25 }}
+          >
+            <motion.div
+              whileHover={{ x: -2 }}
+              className="mb-4"
             >
-              Generate Prompt
-            </Button>
-          </Card>
-        </motion.div>
-      </AnimatePresence>
+              <Link href="/">
+                <Button variant="ghost" className="text-gray-400 hover:text-primary hover:bg-primary/5 transition-all duration-300 rounded-full px-4 py-2">
+                  <ArrowLeft className="mr-2 w-4 h-4" />
+                  Back to Dashboard
+                </Button>
+              </Link>
+            </motion.div>
 
-      <ToastNotification
-        show={showToast}
-        linkButtonText={tileData.output.link_button_text}
-        url={tileData.output.url}
-      />
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', damping: 25 }}
+            >
+              <Card className="relative bg-gray-800/60 backdrop-blur-lg border border-gray-700/50 hover:border-primary/40 rounded-3xl p-10 overflow-hidden group">
+                {/* Subtle hover glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Header Section */}
+                <div className="relative mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <motion.h1 
+                        className="text-4xl font-bold mb-3"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <span className="bg-gradient-to-r from-gray-100 to-gray-200 bg-clip-text text-transparent">
+                          {tileData.title}
+                        </span>
+                        {params.id === 'proposal-generator' && selectedProposalType && (
+                          <motion.span 
+                            className="block text-xl text-primary mt-1"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            {selectedProposalType === 'html' ? '✨ HTML Overview' : '📄 Markdown Proposal'}
+                          </motion.span>
+                        )}
+                      </motion.h1>
+                      
+                      <motion.p 
+                        className="text-gray-300 text-lg leading-relaxed"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        {tileData.description}
+                      </motion.p>
+                    </div>
+                    
+                    {params.id === 'proposal-generator' && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <Button
+                          variant="outline" 
+                          onClick={() => setSelectedProposalType(null)}
+                          className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 rounded-full"
+                        >
+                          Change Type
+                        </Button>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Form Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <GeneratorForm
+                    inputs={tileData.inputs}
+                    formData={formData}
+                    documents={documents}
+                    selectedProposalType={selectedProposalType}
+                    isTemplateLoading={isTemplateLoading}
+                    templateError={templateError}
+                    onInputChange={handleInputChange}
+                    onAddDocument={handleAddDocument}
+                    onRemoveDocument={handleRemoveDocument}
+                    onDocumentChange={handleDocumentChange}
+                  />
+                </motion.div>
+                
+                {/* Enhanced Toggle */}
+                <motion.div 
+                  className="flex items-center justify-center py-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <label className="relative inline-flex items-center cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={includeLAIContext}
+                      onChange={(e) => setIncludeLAIContext(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-3 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary peer-checked:to-green-400 after:shadow-sm"></div>
+                    <span className="ml-4 text-base font-medium text-gray-300 group-hover:text-gray-100 transition-colors">
+                      Include LongevAI Context
+                    </span>
+                  </label>
+                </motion.div>
+
+                {/* Enhanced Generate Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <Button
+                    onClick={generatePrompt}
+                    disabled={!isFormValid()}
+                    className="relative w-full bg-gradient-to-r from-primary to-green-400 hover:from-green-400 hover:to-primary text-black font-bold text-lg py-4 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group shadow-lg hover:shadow-xl hover:shadow-primary/20"
+                  >
+                    {/* Subtle shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                    
+                    <span className="relative flex items-center justify-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Generate Prompt
+                    </span>
+                  </Button>
+                </motion.div>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        <ToastNotification
+          show={showToast}
+          linkButtonText={tileData.output.link_button_text}
+          url={tileData.output.url}
+        />
+      </div>
     </div>
   );
 }

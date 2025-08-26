@@ -1,10 +1,12 @@
 // ---- File: src/app/layout.tsx ----
 // src/app/layout.tsx
+'use client';
+
 import './globals.css'
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react' // Use Sparkles icon for Prompt Studio
+import { motion } from 'framer-motion'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -12,10 +14,7 @@ const inter = Inter({
   variable: '--font-inter', // Assign CSS variable
 })
 
-export const metadata: Metadata = {
-  title: 'LongevAI Prompt Studio',
-  description: 'Generate specialized prompts for LongevAI projects.',
-}
+
 
 export default function RootLayout({
   children,
@@ -24,6 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} font-sans antialiased`}>
+      <head>
+        <title>LongevAI Prompt Studio</title>
+        <meta name="description" content="Generate specialized prompts for LongevAI projects." />
+      </head>
       {/* Apply dark theme globally for this example */}
       <body className="dark bg-gray-950 text-gray-100 min-h-screen flex flex-col">
         {/* Header */}
@@ -34,6 +37,17 @@ export default function RootLayout({
               <span>Prompt Studio</span>
               <span className="text-sm font-normal text-gray-400 ml-1">by LongevAI</span>
             </Link>
+            <div className="flex items-center gap-2">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              >
+                <Sparkles size={16} className="text-primary/80" />
+              </motion.div>
+              <span className="text-xs font-medium text-gray-400 tracking-wider uppercase">
+                AI-Powered Creation
+              </span>
+            </div>
           </div>
         </header>
 

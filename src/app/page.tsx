@@ -1,60 +1,111 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import * as Icons from 'lucide-react';
 import tilesData from '@/data/tiles.json';
+import { useRef } from 'react';
+import { Sparkles } from 'lucide-react';
 
 export default function HomePage() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.12,
+        delayChildren: 0.3
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: {
+        type: 'spring' as const,
+        damping: 20,
+        stiffness: 350
+      }
+    }
   };
 
   return (
     <div className="relative min-h-screen">
-      {/* Subtle Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-950 to-gray-900">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(140,198,63,0.03),transparent_70%)]" />
+      {/* Inspiring Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(140,198,63,0.08),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(140,198,63,0.06),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(140,198,63,0.04),transparent_50%)]" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
-        {/* Clean Hero Section */}
+      {/* Subtle floating particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {Array.from({ length: 3 }, (_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            animate={{
+              y: [0, -60, 0],
+              opacity: [0.2, 0.6, 0.2],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 8 + i * 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 3,
+            }}
+            style={{
+              left: `${25 + (i * 25)}%`,
+              top: `${40 + Math.sin(i) * 15}%`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-10">
+        {/* Compact Hero Section */}
         <div className="text-center mb-12">
           <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-green-400 bg-clip-text text-transparent mb-4"
-          >
-            LongevAI Prompt Studio
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-400 text-lg max-w-2xl mx-auto"
+            className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight"
           >
-            Create professional prompts with our intelligent generator tools
-          </motion.p>
+            <span className="bg-gradient-to-r from-primary via-green-300 to-emerald-400 bg-clip-text text-transparent">
+              LongevAI
+            </span>
+            {" "}
+            <span className="text-gray-100">
+              Prompt Studio
+            </span>
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary/10 to-green-400/10 rounded-full border border-primary/20 backdrop-blur-sm"
+          >
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-gray-200 font-medium">Ready to create something extraordinary?</span>
+          </motion.div>
         </div>
 
-        {/* Clean Tiles Grid */}
+        {/* Enhanced Tiles Grid */}
         <motion.div
+          ref={ref}
           variants={container}
           initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          animate={isInView ? "show" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {tilesData.map((tile) => {
             let IconComponent = Icons.FileText;
@@ -69,29 +120,51 @@ export default function HomePage() {
               <motion.div key={tile.id} variants={item}>
                 <Link href={`/${tile.id}`}>
                   <motion.div
-                    whileHover={{ y: -4 }}
+                    whileHover={{ 
+                      y: -6,
+                      transition: { type: 'spring', damping: 25, stiffness: 400 }
+                    }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 400 }}
                     className="h-full"
                   >
-                    <Card className="relative p-8 h-full bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:border-primary/40 transition-all duration-300 rounded-2xl cursor-pointer group overflow-hidden">
-                      {/* Subtle hover effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <Card className="relative p-8 h-full bg-gray-800/50 backdrop-blur-md border border-gray-700/50 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl cursor-pointer group overflow-hidden">
+                      {/* Enhanced hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      
+                      {/* Subtle shimmer effect */}
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 ease-out" />
                       
                       <div className="relative flex flex-col items-center text-center space-y-6">
-                        <div className="p-4 bg-primary/10 rounded-2xl group-hover:bg-primary/15 transition-colors duration-300">
-                          <IconComponent className="w-10 h-10 text-primary group-hover:text-green-400 transition-colors duration-300" />
-                        </div>
+                        <motion.div 
+                          className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 rounded-2xl group-hover:from-primary/25 group-hover:to-primary/10 transition-all duration-300"
+                          whileHover={{ 
+                            scale: 1.05,
+                            transition: { type: 'spring', damping: 15 }
+                          }}
+                        >
+                          <IconComponent className="w-12 h-12 text-primary group-hover:text-green-300 transition-colors duration-300" />
+                          
+                          {/* Icon glow effect */}
+                          <div className="absolute inset-0 bg-primary/15 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+                        </motion.div>
                         
                         <div className="space-y-3">
-                          <h3 className="text-xl font-semibold text-gray-100 group-hover:text-primary transition-colors duration-300">
+                          <h3 className="text-xl font-bold text-gray-100 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-green-300 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                             {tile.title}
                           </h3>
                           
-                          <p className="text-gray-400 text-sm leading-relaxed">
+                          <p className="text-gray-400 group-hover:text-gray-300 leading-relaxed transition-colors duration-300">
                             {tile.description}
                           </p>
                         </div>
+
+                        {/* Subtle success indicator */}
+                        <motion.div
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full opacity-0 group-hover:opacity-100"
+                          initial={{ scale: 0 }}
+                          whileHover={{ scale: 1 }}
+                          transition={{ type: 'spring', damping: 15 }}
+                        />
                       </div>
                     </Card>
                   </motion.div>

@@ -169,3 +169,32 @@
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Refined animations */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes subtle-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(140, 198, 63, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(140, 198, 63, 0.2); }
+}
+
+@keyframes soft-shimmer {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+.gentle-float {
+  animation: gentle-float 6s ease-in-out infinite;
+}
+
+.subtle-glow {
+  animation: subtle-glow 3s ease-in-out infinite;
+}
+
+.soft-shimmer {
+  animation: soft-shimmer 2s ease-out;
+}
