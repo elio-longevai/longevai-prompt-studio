@@ -273,7 +273,7 @@ export default function GeneratorPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative h-full min-h-full">
       {/* Inspiring background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(140,198,63,0.05),transparent_70%)]" />
