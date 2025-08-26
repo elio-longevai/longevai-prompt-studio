@@ -34,10 +34,6 @@ export default function RootLayout({
               <span>Prompt Studio</span>
               <span className="text-sm font-normal text-gray-400 ml-1">by LongevAI</span>
             </Link>
-            {/* Add other nav items here if needed */}
-            {/* <nav>
-              <Link href="/about" className="text-gray-400 hover:text-primary">About</Link>
-            </nav> */}
           </div>
         </header>
 

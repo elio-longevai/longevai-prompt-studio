@@ -36,6 +36,10 @@
     --ring: 140 70% 70%; /* Lighter green for focus ring */
 
     --radius: 0.75rem; /* Slightly larger radius */
+    
+    /* Custom animation variables */
+    --shimmer-duration: 2s;
+    --pulse-duration: 3s;
   }
 
   /* Apply dark mode variables directly if needed, but defaults are set for dark */
@@ -155,4 +159,13 @@
 /* Ensure container max-width is consistent if needed */
 .container {
   max-width: 1400px; /* Adjust as needed */
+}
+
+/* Professional Utility Classes */
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

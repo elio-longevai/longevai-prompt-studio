@@ -151,94 +151,88 @@ export default function GeneratorPage() {
   const generatePrompt = () => {
     if (!tileData) return;
 
-    let systemPrompt = '';
-    let userPrompt = '';
+    let finalPrompt = '';
 
-    if (params.id === 'proposal-generator') {
-      // Handle dual-path proposal generation
-      if (selectedProposalType === 'html') {
-        systemPrompt = tileData.system_prompts?.html || '';
-        
-        userPrompt = '<longevai_context>\n' + (longevaiContextContent || '') + '\n</longevai_context>\n\n';
-        
-        const htmlTemplate = formData.custom_html_template || templateContent;
-        userPrompt += '<base_html_template>\n<![CDATA[\n' + htmlTemplate + '\n]]>\n</base_html_template>\n\n';
-        
-      } else if (selectedProposalType === 'markdown') {
-        systemPrompt = tileData.system_prompts?.markdown || '';
-        
-        userPrompt = '<longevai_context>\n' + (longevaiContextContent || '') + '\n</longevai_context>\n\n';
-        
-        const mdTemplate = formData.custom_md_template || templateContent;
-        userPrompt += '<markdown_template>\n' + mdTemplate + '\n</markdown_template>\n\n';
-      }
-
-      // Add context documents
-      if (documents.length > 0) {
-        userPrompt += '<context_docs>\n';
-        documents.forEach((doc) => {
-          if (doc.name && doc.content) {
-            const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n\n`;
-          }
-        });
-        userPrompt += '</context_docs>\n\n';
-      }
-
-      // Add business context fields
-      if (formData.business_name) {
-        userPrompt += `<business_name>\n${formData.business_name}\n</business_name>\n\n`;
-      }
-      if (formData.business_context) {
-        userPrompt += `<business_context>\n${formData.business_context}\n</business_context>\n\n`;
-      }
-      if (formData.instructions) {
-        userPrompt += `<instructions>\n${formData.instructions}\n</instructions>\n\n`;
-      }
-
+    // 1. Get and format the system prompt
+    let systemPromptContent = '';
+    if (params.id === 'proposal-generator' && selectedProposalType) {
+      systemPromptContent = tileData.system_prompts?.[selectedProposalType] || '';
     } else {
-      // Handle other generators (existing logic)
-      systemPrompt = tileData.system_prompt || '';
-      Object.keys(formData).forEach((key) => {
-        const placeholder = `{{${key.toUpperCase()}}}`;
-        systemPrompt = systemPrompt.replace(placeholder, formData[key]);
-      });
+      systemPromptContent = tileData.system_prompt || '';
+    }
 
-      if (includeLAIContext) {
-        userPrompt += `<longevai_context>\n${longevaiContextContent || ''}\n</longevai_context>\n\n`;
+    // Replace any placeholders within the system prompt
+    Object.keys(formData).forEach((key) => {
+      const placeholder = `{{${key.toUpperCase()}}}`;
+      if (systemPromptContent.includes(placeholder)) {
+        systemPromptContent = systemPromptContent.replace(new RegExp(placeholder, 'g'), formData[key]);
       }
+    });
 
-      // Separate the main task/instruction input
-      const mainInstructionInputId = 'task'; // Or 'instructions', adjust if needed
-      let mainInstructionContent = '';
+    if (systemPromptContent) {
+      finalPrompt += `<system_instructions>\n${systemPromptContent}\n</system_instructions>\n\n`;
+    }
 
-      tileData.inputs.forEach((input) => {
-        if (input.id === mainInstructionInputId) {
-          mainInstructionContent = formData[input.id] || '';
-        } else if (input.type !== 'document_upload' && formData[input.id]) {
-          // Add all other inputs first
-          userPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
-        }
-      });
+    // 2. Add LongevAI context if enabled
+    if (includeLAIContext) {
+      finalPrompt += `<longevai_context>\n${longevaiContextContent || ''}\n</longevai_context>\n\n`;
+    }
 
-      if (documents.length > 0) {
-        userPrompt += '<context_docs>\n';
-        documents.forEach((doc) => {
-          if (doc.name && doc.content) {
-            const tagName = doc.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            userPrompt += `<${tagName}>\n${doc.content}\n</${tagName}>\n`;
-          }
-        });
-        userPrompt += '</context_docs>\n\n';
-      }
+    // 3. Add proposal templates if applicable
+    if (params.id === 'proposal-generator' && selectedProposalType) {
+      const template = selectedProposalType === 'html'
+        ? formData.custom_html_template || templateContent
+        : formData.custom_md_template || templateContent;
+      
+      const templateTag = selectedProposalType === 'html' ? 'base_html_template' : 'markdown_template';
+      const useCdata = selectedProposalType === 'html';
 
-      // Append the main task/instruction at the very end
-      if (mainInstructionContent) {
-        userPrompt += `<${mainInstructionInputId}>\n${mainInstructionContent}\n</${mainInstructionInputId}>\n`;
+      if (template) {
+        finalPrompt += `<${templateTag}>\n${useCdata ? '<![CDATA[\n' : ''}${template}${useCdata ? '\n]]>\n' : ''}\n</${templateTag}>\n\n`;
       }
     }
+
+    // 4. Add all other regular inputs, excluding special ones handled elsewhere
+    const mainInstructionId = params.id === 'proposal-generator' ? 'instructions' : 'task';
+    const specialInputIds = new Set([
+      mainInstructionId, 
+      'comprehensiveness', // Handled in system prompt
+      'html_template', 'custom_html_template', // Handled in templates
+      'md_template', 'custom_md_template'      // Handled in templates
+    ]);
     
-    navigator.clipboard.writeText(userPrompt.trim());
+    const relevantInputs = tileData.inputs.filter(input => {
+      if (params.id !== 'proposal-generator') return true;
+      return input.path === 'both' || input.path === selectedProposalType;
+    });
+
+    relevantInputs.forEach((input) => {
+      if (!specialInputIds.has(input.id) && input.type !== 'document_upload' && formData[input.id]) {
+        finalPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
+      }
+    });
+
+    // 5. Add context documents
+    if (documents.length > 0) {
+      let docsContent = '';
+      documents.forEach((doc) => {
+        if (doc.name && doc.content) {
+          const tagName = doc.name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/\s+/g, '_');
+          docsContent += `  <${tagName}>\n${doc.content}\n  </${tagName}>\n`;
+        }
+      });
+      if (docsContent) {
+        finalPrompt += `<context_docs>\n${docsContent}</context_docs>\n\n`;
+      }
+    }
+
+    // 6. Add the main instruction at the very end
+    if (formData[mainInstructionId]) {
+      finalPrompt += `<${mainInstructionId}>\n${formData[mainInstructionId]}\n</${mainInstructionId}>\n`;
+    }
+
+    // 7. Copy to clipboard and show toast
+    navigator.clipboard.writeText(finalPrompt.trim());
     setShowToast(true);
     setTimeout(() => setShowToast(false), 5000);
   };
@@ -294,7 +288,7 @@ export default function GeneratorPage() {
             </Button>
           </Link>
 
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-3xl p-8">
+          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-2xl p-8">
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
