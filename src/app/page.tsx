@@ -38,7 +38,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative h-full min-h-full">
+    <div className="relative min-h-full">
       {/* Inspiring Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(140,198,63,0.08),transparent_70%)]" />
