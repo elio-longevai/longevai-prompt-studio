@@ -5,11 +5,14 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Plus, X, Check } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import tilesData from '@/data/tiles.json';
 import { templateLoader } from '@/lib/templateLoader';
+import { ProposalTypeSelector } from '@/components/studio/ProposalTypeSelector';
+import { GeneratorForm, TileInput } from '@/components/studio/GeneratorForm';
+import { ToastNotification } from '@/components/studio/ToastNotification';
+import { Document } from '@/components/studio/DocumentUploader';
 
 interface TileData {
   id: string;
@@ -21,26 +24,12 @@ interface TileData {
     html?: string;
     markdown?: string;
   };
-  inputs: Array<{
-    id: string;
-    label: string;
-    type: string;
-    path?: string;
-    placeholder?: string;
-    required?: boolean;
-    options?: string[];
-    default?: string;
-  }>;
+  inputs: TileInput[];
   output: {
     copy_button_text: string;
     link_button_text: string;
     url: string;
   };
-}
-
-interface Document {
-  name: string;
-  content: string;
 }
 
 export default function GeneratorPage() {
@@ -53,6 +42,8 @@ export default function GeneratorPage() {
   const [longevaiContextContent, setLongevaiContextContent] = useState<string>('');
   const [selectedProposalType, setSelectedProposalType] = useState<'html' | 'markdown' | null>(null);
   const [templateContent, setTemplateContent] = useState<string>('');
+  const [isTemplateLoading, setIsTemplateLoading] = useState(false);
+  const [templateError, setTemplateError] = useState<string | null>(null);
 
   useEffect(() => {
     const tile = tilesData.find((t) => t.id === params.id);
@@ -99,12 +90,28 @@ export default function GeneratorPage() {
   };
 
   const loadTemplateContent = async (templateName: string) => {
+    if (!templateName || templateName === 'custom') {
+      setTemplateContent('');
+      setTemplateError(null);
+      return;
+    }
+    setIsTemplateLoading(true);
+    setTemplateError(null);
     try {
       const content = await templateLoader.loadTemplate(templateName);
-      setTemplateContent(content);
+      if (content.startsWith('Error:')) {
+        setTemplateError(content);
+        setTemplateContent('');
+      } else {
+        setTemplateContent(content);
+      }
     } catch (error) {
-      console.log('Could not load template:', error);
+      const message = 'Failed to load template.';
+      console.error(message, error);
+      setTemplateError(message);
       setTemplateContent('');
+    } finally {
+      setIsTemplateLoading(false);
     }
   };
 
@@ -124,13 +131,6 @@ export default function GeneratorPage() {
     setDocuments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleFileUpload = async (index: number, file: File) => {
-    const text = await file.text();
-    handleDocumentChange(index, 'content', text);
-    if (!documents[index].name) {
-      handleDocumentChange(index, 'name', file.name.replace(/\.[^/.]+$/, ''));
-    }
-  };
 
   const isFormValid = () => {
     if (!tileData) return false;
@@ -272,55 +272,7 @@ export default function GeneratorPage() {
             </Button>
           </Link>
 
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 rounded-3xl p-8">
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-bold text-gray-100 mb-2">{tileData.title}</h1>
-              <p className="text-gray-400 mb-6">{tileData.description}</p>
-              <h2 className="text-xl font-semibold text-gray-200 mb-4">What type of proposal do you want to create?</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Card 
-                  className="p-6 bg-gray-700/30 border-gray-600 hover:border-primary/50 transition-all duration-200 cursor-pointer"
-                  onClick={() => setSelectedProposalType('html')}
-                >
-                  <div className="text-center space-y-4">
-                    <div className="p-4 bg-primary/10 rounded-2xl mx-auto w-fit">
-                      <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-100">HTML Overview</h3>
-                    <p className="text-gray-400 text-sm">For creating a high-level, visually impressive web-based summary.</p>
-                  </div>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Card 
-                  className="p-6 bg-gray-700/30 border-gray-600 hover:border-primary/50 transition-all duration-200 cursor-pointer"
-                  onClick={() => setSelectedProposalType('markdown')}
-                >
-                  <div className="text-center space-y-4">
-                    <div className="p-4 bg-primary/10 rounded-2xl mx-auto w-fit">
-                      <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-100">Detailed Markdown Proposal</h3>
-                    <p className="text-gray-400 text-sm">For generating a comprehensive, structured document based on a template.</p>
-                  </div>
-                </Card>
-              </motion.div>
-            </div>
-          </Card>
+          <ProposalTypeSelector onTypeSelect={setSelectedProposalType} />
         </motion.div>
       </div>
     );
@@ -368,123 +320,20 @@ export default function GeneratorPage() {
               </div>
             </div>
 
-            <div className="space-y-6">
-              {tileData.inputs
-                .filter((input) => {
-                  if (params.id !== 'proposal-generator') return true;
-                  return input.path === 'both' || input.path === selectedProposalType;
-                })
-                .map((input) => {
-                  // Hide custom template fields unless 'custom' is selected
-                  if ((input.id === 'custom_html_template' && formData.html_template !== 'custom') ||
-                      (input.id === 'custom_md_template' && formData.md_template !== 'custom')) {
-                    return null;
-                  }
-                  
-                  return (
-                    <div key={input.id}>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        {input.label}
-                        {input.required && <span className="text-red-500 ml-1">*</span>}
-                      </label>
-                      
-                      {input.type === 'text' && (
-                        <input
-                          type="text"
-                          value={formData[input.id] || ''}
-                          onChange={(e) => handleInputChange(input.id, e.target.value)}
-                          placeholder={input.placeholder}
-                          className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 placeholder-gray-500 focus:border-primary focus:outline-none"
-                        />
-                      )}
-                      
-                      {input.type === 'textarea' && (
-                        <Textarea
-                          value={formData[input.id] || ''}
-                          onChange={(e) => handleInputChange(input.id, e.target.value)}
-                          placeholder={input.placeholder}
-                          className="w-full min-h-[100px] bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-primary rounded-xl"
-                        />
-                      )}
-                      
-                      {input.type === 'select' && (
-                        <select
-                          value={formData[input.id] || ''}
-                          onChange={(e) => handleInputChange(input.id, e.target.value)}
-                          className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-100 focus:border-primary focus:outline-none"
-                        >
-                          {input.options?.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                      
-                      {input.type === 'document_upload' && (
-                  <div className="space-y-3">
-                    {documents.map((doc, index) => (
-                      <Card key={index} className="bg-gray-700/30 border-gray-600 p-4">
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-grow space-y-3">
-                            <input
-                              type="text"
-                              value={doc.name}
-                              onChange={(e) => handleDocumentChange(index, 'name', e.target.value)}
-                              placeholder="Document name"
-                              className="w-full px-3 py-1 bg-gray-800/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-500 focus:border-primary focus:outline-none"
-                            />
-                            <Textarea
-                              value={doc.content}
-                              onChange={(e) => handleDocumentChange(index, 'content', e.target.value)}
-                              placeholder="Paste content here..."
-                              className="w-full min-h-[80px] bg-gray-800/50 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-primary rounded-lg"
-                            />
-                            <div className="relative">
-                              <input
-                                type="file"
-                                id={`file-upload-${index}`}
-                                onChange={(e) => e.target.files?.[0] && handleFileUpload(index, e.target.files[0])}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              />
-                              <label
-                                htmlFor={`file-upload-${index}`}
-                                className="inline-flex items-center px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-300 text-sm font-medium cursor-pointer hover:bg-gray-600/50 hover:border-primary/50 transition-all duration-200"
-                              >
-                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                                Choose File
-                              </label>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveDocument(index)}
-                            className="text-red-500 hover:bg-red-500/10"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </Card>
-                    ))}
-                    <Button
-                      variant="outline"
-                      onClick={handleAddDocument}
-                      className="w-full border-gray-600 text-gray-300 hover:bg-gray-700/50"
-                    >
-                      <Plus className="mr-2 w-4 h-4" />
-                      Add Document
-                    </Button>
-                  </div>
-                        )}
-                      
-                    </div>
-                  )
-                })}
-              
-              <div className="flex items-center space-x-3 py-4">
+            <GeneratorForm
+              inputs={tileData.inputs}
+              formData={formData}
+              documents={documents}
+              selectedProposalType={selectedProposalType}
+              isTemplateLoading={isTemplateLoading}
+              templateError={templateError}
+              onInputChange={handleInputChange}
+              onAddDocument={handleAddDocument}
+              onRemoveDocument={handleRemoveDocument}
+              onDocumentChange={handleDocumentChange}
+            />
+            
+            <div className="flex items-center space-x-3 py-4">
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -504,34 +353,15 @@ export default function GeneratorPage() {
             >
               Generate Prompt
             </Button>
-          </div>
-        </Card>
+          </Card>
         </motion.div>
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, x: 100, y: 0 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: 100, y: 0 }}
-            className="fixed bottom-8 right-8 bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg"
-          >
-            <div className="flex items-center space-x-3 mb-3">
-              <Check className="w-5 h-5 text-green-500" />
-              <p className="text-gray-100 font-medium">Prompt is copied!</p>
-            </div>
-            <a
-              href={tileData.output.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-primary text-black font-medium rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              {tileData.output.link_button_text}
-            </a>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ToastNotification
+        show={showToast}
+        linkButtonText={tileData.output.link_button_text}
+        url={tileData.output.url}
+      />
     </div>
   );
 }
