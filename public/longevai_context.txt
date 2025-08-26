@@ -1,0 +1,241 @@
+# LongevAI Documentation
+
+## 🚀 **1. Introduction to LongevAI**
+
+LongevAI is a premier **AI consulting and implementation firm** dedicated to building custom AI solutions and innovative automations that drive efficiency and growth. The company's core mission is to empower businesses, with a special focus on the longevity and health sectors, to "Turn Innovation Mode ON" and transform complex challenges into practical, production-ready advantages.
+
+### **1.1. Origin Story & Founders**
+
+LongevAI was founded by **Cosmina Druica** and **Elio Verhoef**, who met through the longevity biotech community. They discovered a powerful synergy between their skill sets: Cosmina's two decades in tech consulting, business development, and strategy, combined with Elio's deep expertise as an AI and technology specialist, dubbed a "solutioning wizard."
+
+United by a shared obsession with optimization—in business, life, and health—they traded established careers for a shared mission. They identified a critical gap where groundbreaking organizations lacked the specialized AI expertise to accelerate R&D, optimize operations, or scale their innovations. LongevAI was born to fill this gap.
+
+### **1.2. Our Philosophy**
+
+> We believe in the transformative power of AI not just as a tool for profit, but as a force for improving quality of life. Our philosophy is rooted in **optimization**: we are committed to making businesses – and by extension people’s lives – better through intelligent technology.
+
+LongevAI operates as a hands-on partner, guiding clients from initial discovery through implementation and ongoing support. A core part of the mission is to demystify AI, empowering clients with the knowledge to feel confident and informed.
+
+### **1.3. The LongevAI Competitive Edge**
+
+LongevAI stands out through four core competitive advantages:
+
+| Advantage | Description |
+| :--- | :--- |
+| 🎯 **Highest Impact Solutions** | Identifying and implementing AI solutions with maximum ROI for specific business contexts. |
+| 🔧 **Deep Customization** | Tailoring solutions throughout the entire process to address unique client needs and systems. |
+| 🧠 **Superior AI Expertise** | Extensive knowledge across various AI technologies, models, and implementation approaches. |
+| ⚡ **Extremely Quick Delivery** | Rapid development and deployment of solutions compared to traditional service providers. |
+
+---
+
+## **🧭 2. Company Strategy & Vision**
+
+LongevAI's growth is guided by a phased, ambitious vision, supported by a structured goal-setting framework.
+
+### **2.1. Vision & Growth Plan**
+
+The company's long-term vision is structured in three key phases:
+
+1.  **Phase 1: Empowering Businesses with AI:** The immediate goal is to scale LongevAI to partner with **50+ clients per year**, helping each harness AI to dramatically improve their operations and create a ripple effect of innovation.
+2.  **Phase 2: Scaling Impact through Acquisition:** The plan is to acquire mission-driven, socially impactful businesses and supercharge their impact with AI-driven efficiencies and insights.
+3.  **Phase 3: Creating a Longevity Hub:** The grand vision is to establish a physical **Longevity Hub**—a center combining biotech incubators, co-working spaces, wellness services (gym, spa, personalized nutrition), and health-prevention clinics to advance healthy human lifespans.
+
+### **2.2. OKR Framework: Driving Focused Growth**
+
+LongevAI uses the OKR (Objectives and Key Results) framework to set and execute ambitious goals, ensuring focus and alignment across the team.
+
+*   **Cadence:**
+    *   **Quarterly Planning:** A 60-minute all-hands meeting to set new OKRs.
+    *   **Monthly Review:** A 30-minute meeting to track progress and identify blockers.
+    *   **Weekly Check-in:** A brief update during the weekly kick-off.
+*   **Prioritization:** Initiatives are prioritized based on an **Impact vs. Effort** analysis, estimating input (time/cost) and potential ROI.
+
+#### **Q3 2025 OKR Highlights**
+
+*   **Objective 1: Enhance Brand Presence & Lead Generation**
+    *   **KR:** Improve Website SEO/Copy.
+    *   **KR:** Secure one new appointment per week.
+    *   **KR:** Create a bi-weekly LinkedIn post buffer.
+    *   **KR:** Create a new logo and physical banner for the office.
+*   **Objective 2: Boost Internal Efficiency & Team Capabilities**
+    *   **KR:** Implement a strict monthly coding/workflow synchronization across the entire team.
+    *   **KR:** Set up a "See what AI can do for your business in just 30 seconds!" feature on the website.
+---
+
+## **🛠️ 3. Services & Engagement Models**
+
+LongevAI offers a range of services designed to guide businesses through their AI transformation journey.
+
+### **3.1. Core Service Offerings**
+
+*   **Discovery & Consulting:**
+    *   **Quick AI Benefit Scan:** An initial assessment of processes and pain points to identify high-value AI opportunities.
+    *   **Deep-Dive Consulting:** Comprehensive strategy and roadmap development.
+*   **Custom AI Implementation:** Designing and building bespoke AI solutions, automations, and agentic workflows that integrate directly into client systems.
+*   **AI Workshops & Training:**
+    *   General training for business-wide AI exploration.
+    *   Customized training for specific business needs and tools.
+    *   Train-the-trainer programs to build internal capabilities.
+
+### **3.2. The Subscription Model**
+
+For deeper partnerships, LongevAI offers a subscription model that positions them as an integrated, dedicated AI department for the client.
+*   **Value Proposition:** Provides SMEs with expert AI capabilities that are cost-prohibitive to hire full-time and more flexible than traditional employment.
+*   **Benefits:** This model eliminates administrative overhead (proposals, scope meetings), enables continuous value delivery, and fosters a deep understanding of the client's business, redirecting time from project admin to actual implementation.
+*   **Risk Mitigation:** The first month includes a 100% money-back guarantee, followed by a cancel-anytime policy with a 3-month notice period.
+
+---
+
+## **⚙️ 4. Internal Operations & The LongevAI Playbook**
+
+Efficiency, transparency, and cutting-edge technology are the pillars of LongevAI's internal operations.
+
+### **4.1. The Client Journey SOP**
+
+LongevAI follows a transparent, six-step process for all AI integration, consultancy, and workshop projects:
+
+1.  **Initial Discovery:** A 60-90 minute workshop to map pain points and prioritize AI opportunities.
+2.  **Proposal Creation:** Delivery of an interactive proposal with high-level slides and detailed module breakdowns.
+3.  **Refinement & Contract:** Revisions based on client feedback and contract signing.
+4.  **Weekly Progress:** 30-minute syncs with live demos and client Q&A. This step is repeated for each module.
+5.  **User Acceptance Testing (UAT):** Formal client validation and sign-off at the end of each module.
+6.  **Future Opportunities:** A post-implementation review to identify new use cases and roadmap future phases.
+
+### **4.2. Development Workflow & Guidelines**
+
+LongevAI employs a sophisticated, AI-augmented development workflow designed for speed, quality, and scalability.
+
+*   **Core Philosophy:** 🧠 **Architecture First, Code Second.** A flawless, detailed plan is created using AI *before* writing code to minimize bugs and technical debt.
+*   **The AI Planning Phase (Phase 1):**
+    *   **Tool:** Google's **AI Studio** is used for its massive context window.
+    *   **Process:** The entire codebase is provided as context. The developer states a high-level goal and uses a critical prompt: *"Ask me all the relevant questions first that you need to make the best possible solution."*
+    *   **Output:** This dialogue results in a bulletproof, step-by-step implementation plan or, for backends, a complete set of well-architected files.
+*   **The Development Loop (Phase 2):**
+    *   **Tools:** AI-powered editors like **Claude Code** (terminal-based) or **Cursor** (visual IDE).
+    *   **Process:** The plan from AI Studio is handed off to the AI Coder for precise execution.
+    *   **Environment:** Development is standardized using **Docker** and a **Makefile** for one-command setup (`make setup`, `make run-dev`), ensuring consistency for every developer.
+*   **The Quality Gates (Phase 3):**
+    *   **Automated Review:** When a Pull Request (PR) is opened on GitHub, **Gemini** is automatically added as a reviewer. It analyzes every line of code for bugs, performance issues, security vulnerabilities, and best practice deviations.
+    *   **Human-in-the-Loop:** The developer uses an AI Coder to apply Gemini's suggestions. A human reviewer then focuses on high-level architecture and business logic before merging. The reviewer is always the one to merge the code.
+
+### **4.3. Team & Communication**
+
+*   **Team Structure:**
+    *   **Cosmina Druica:** CEO (Business Development, Client Relations)
+    *   **Elio Verhoef:** CTO (Technical Lead, Project Owner)
+    *   **Bart Hordijk:** Sales & Business Development
+    *   **Marketing:** Ankita Kabir
+    *   **Developers:** Diogo Leal, Catalin Niculescu, Harshit Kedia, and Vladislavs Sokolovs.
+*   **Tools:**
+    *   **Slack:** Primary tool for daily internal and client communication.
+    *   **Fibery:** Central hub for project management, documentation, and SOPs.
+    *   **Fathom / Tactiq:** AI tools for recording, transcribing, and summarizing virtual meetings.
+*   **Onboarding:** A comprehensive process is in place, covering general company culture, role-specific checklists (Developer, Sales, Project Manager), and technical exercises.
+
+---
+
+## **📈 5. Client Projects & Case Studies**
+
+This section details LongevAI's work with various clients, showcasing their expertise across different industries and solutions.
+
+### **5.1. Qualevita Clinic (Longevity & Healthcare)**
+
+A flagship project to build a transformative AI-powered system for automating and enhancing the patient consultation process for a premier longevity clinic.
+
+*   **Challenge:** Qualevita's doctors conduct deep, multi-hour consultations, but the process of documenting findings, creating patient plans, and writing prescriptions was entirely manual, time-consuming, and inefficient.
+*   **Solution: The Consultation Automation System:** LongevAI built a secure, GDPR-compliant web platform with:
+    *   **AI Medical Transcription:** Real-time, high-accuracy transcription of consultations (Dutch & English) using Google Vertex AI, with a custom vocabulary for medical terms. Audio files are deleted immediately after processing for privacy.
+    *   **Automated Report Generation:** The AI processes the transcript to automatically populate Qualevita's bespoke templates, including a comprehensive 5-pillar patient health program and a structured prescription list.
+    *   **Interactive Editing:** A branded doctor interface allows for manual edits and a powerful AI Chat Assistant for voice or text commands (e.g., *"Increase Eutirox to 75mcg"*).
+    *   **Data Privacy by Design:** A "Redaction-in-Transit" strategy ensures client names are replaced with a `[CLIENT_NAME]` placeholder *before* being sent to the LLM, making the data anonymous during processing.
+*   **Technical Architecture:** A modern serverless stack hosted in Frankfurt, Germany, using Koyeb (Backend), MongoDB Atlas (Database), and Managed Redis (Task Queue). The architecture is designed to be highly scalable and cost-efficient, with an initial operating cost of only **~€13/month**.
+*   **Outcome:** A game-changing tool that drastically reduces administrative burden, allowing clinicians to focus entirely on the patient. The project serves as the foundation for a future "Knowledge Base" to unlock deeper insights from patient data.
+
+### **5.2. Medio Zorg (Healthcare Recruitment)**
+
+A project to build and enhance an intelligent, two-sided recruitment platform to disrupt the traditional, commission-based healthcare hiring model.
+
+*   **Challenge:** The existing platform struggled with low candidate onboarding and client adoption. The manual recruitment process was not scalable.
+*   **Solution: The Medio Zorg Platform & Strategic Pivot:**
+    *   **AI Matching Engine:** An advanced system that matches candidates to vacancies based on a detailed, weighted score across categories like function, specialization, and distance.
+    *   **Automated CV Parsing:** The system automatically extracts structured data from uploaded CVs to enrich candidate profiles.
+    *   **Strategic Pivot to "Medio Punt":** When the initial model faced sales hurdles, LongevAI collaborated on a strategic pivot to a **joint venture with "Arbo" (Martin)**. The project involves creating a white-labeled HR platform for Arbo, funded by them, with a 50/50 revenue split. This shifts the focus from a direct-to-market SaaS to a powerful B2B partnership.
+    *   **AI-Powered Data Import:** To overcome costly API integrations with HR systems like AFAS/Cobra, LongevAI proposed a smarter solution: an AI module that can read and structure data from standard **Excel or PDF exports**, making data import cheaper, faster, and universally compatible.
+*   **Outcome:** A modern recruitment platform poised to reduce hiring costs and increase efficiency for healthcare organizations, with a newly defined, high-potential go-to-market strategy.
+
+### **5.3. MyActiveAge (Longevity & Preventative Health)**
+
+A strategic partnership to build an AI co-pilot for MyActiveAge's team of physicians and coaches, designed to scale the delivery of hyper-personalized longevity advice.
+
+*   **Challenge:** The manual process of analyzing client test data (blood, urine, VO2max) and creating personalized "Findings" and "Action Plans" was a major bottleneck, limiting scalability.
+*   **Solution: The AI-Powered Longevity Engine (Phased Rollout):**
+    *   **Module 1: AI Findings Generator:** The highest priority module automates the first draft of domain-specific health summaries by synthesizing lab results, client profiles, and a curated knowledge base (e.g., Peter Attia's principles).
+    *   **Module 2: AI Action Plan Generator:** Creates personalized action plans with intervention "cards" (Nutrition, Sleep, etc.). The AI personalizes the content *within* the cards based on the client's specific data and goals.
+    *   **Module 3 & 4: Intake & Consult Recording AI:** A system to record, transcribe, and summarize client consultations, automatically suggesting profile updates and fulfilling mandatory `verslaglegging` (summary log) requirements.
+    *   **Module 5: The Longevity Assistant:** A client-facing chatbot fully aware of the client's personal data, allowing them to ask questions about their plan and update their profile via chat.
+*   **IP Agreement:** A crucial decision was made upfront: MyActiveAge retains **100% IP ownership** of the final delivered code, a key requirement for their long-term company valuation.
+*   **Outcome:** A clear, modular roadmap to build a powerful, proprietary AI asset that enhances physician efficiency and enables the scaling of hyper-personalized care.
+
+### **5.4. BetterBrains / BrainThrive (Neurofeedback & Health Optimization)**
+
+A project to develop a Minimum Viable Product (MVP) platform for managing neurofeedback clients and practitioners.
+
+*   **Challenge:** The client, a newly certified practitioner, needed a platform to manage her first cohort of trainees, track their progress, and facilitate supervisor oversight.
+*   **Solution: A 6-Week MVP Platform:** The scope was collaboratively defined to deliver maximum value quickly.
+    *   **Core Features:** Secure portals for clients, trainers, and supervisors; a system for tracking purchased session packages; and a visual timeline of the client's training journey.
+    *   **Key MVP Enhancement:** The most critical feature added during planning was an **interactive, in-platform training plan editor**. This allows supervisors to directly edit and comment on a trainer's plan, solving a major communication bottleneck and making the platform truly "viable."
+    *   **Lean Communication:** To save development time, full in-platform chat was postponed. The MVP cleverly uses links to **external WhatsApp groups** for communication.
+*   **Outcome:** A well-defined, 6-week roadmap for an MVP that is both lean and highly functional, addressing the most critical user needs from day one.
+
+### **5.5. MediCapital Solutions (Equipment Financing)**
+
+An AI project to automate lead generation and qualification for a company providing financing for medical and sustainability equipment.
+
+*   **Challenge:** The client was operating at only 20% capacity due to a lack of marketing and sales activity, struggling to find new leads and penetrate new markets.
+*   **Solution: The AI-Powered Lead Engine:**
+    *   **Ideal Customer Profile (ICP) Workshop:** LongevAI facilitated a workshop to define concrete ICPs. A key strategic shift was to focus not only on end-users but heavily on **suppliers and distributors** as a high-leverage sales channel.
+    *   **AI Discovery & Enrichment:** The system continuously scans the internet to discover new leads matching the ICPs. It then enriches these leads with data from KVK (Chamber of Commerce) and location information.
+    *   **Dashboard & Workflow:** A simple dashboard presents the qualified leads, which can then be exported to HubSpot. The tool is designed as a powerful discovery and qualification engine, not a full CRM.
+*   **Outcome:** A clear plan to build an automated system that fills the sales pipeline with high-quality leads, saving the sales team significant time and enabling strategic market expansion.
+
+### **5.6. V&P Vastgoed (Real Estate)**
+
+An AI solution to automate tenant communication and issue resolution via a WhatsApp-based chatbot.
+
+*   **Challenge:** The property management company was spending significant manual effort handling tenant issues reported via WhatsApp and email, from leakages to heating problems.
+*   **Solution: The V&P Vastgoed Technical Support Bot:**
+    *   **Automated Triage:** The WhatsApp bot initiates a dialogue with tenants to gather details about an issue (what, where, when, photos).
+    *   **Guided Troubleshooting:** For common issues like low boiler pressure, the bot provides step-by-step guides and videos to empower tenants to solve the problem themselves.
+    *   **Intelligent Escalation:** If troubleshooting fails, the bot collects all information into a neat summary and forwards it to the property manager (Carmen), who can then dispatch a technician.
+    *   **Knowledge Integration:** The bot uses a knowledge base of property-specific rules (e.g., "dishwashers are the tenant's responsibility") to provide accurate information.
+*   **Outcome:** A proposal for a 6-week project to deliver a smart automation solution that improves tenant satisfaction, reduces manual workload, and streamlines issue resolution.
+
+---
+
+## **6. Marketing & Sales**
+
+LongevAI's go-to-market strategy is targeted and value-driven, focusing on building credibility and solving tangible business problems.
+
+### **6.1. Ideal Customer Profile (ICP)**
+
+LongevAI primarily targets organizations in the longevity and health sectors but remains open to high-impact projects in other industries.
+
+*   **Company Types:** Longevity-focused startups, preventive health clinics, biotech companies, and wellness platforms.
+*   **Key Characteristics:** Small to mid-size (5-250 employees), post-seed or revenue-generating, data-ready, and led by visionaries who see AI as a strategic differentiator.
+*   **Pain Points:** Lacking in-house AI expertise, struggling to turn data into actionable insights, and facing inefficient workflows.
+
+### **6.2. Sales Strategy**
+
+The sales process is consultative and solution-oriented.
+*   **Focus:** Mental Health AI automated reporting and documentation was identified as a key area to focus on.
+*   **Process:** A standardized sales process is documented in Fibery, including pre-call preparation, agenda setting, and identifying client impact.
+*   **"Wow-Factor" Demos:** The team emphasizes building live mock-ups or demos during sales conversations to make the solution tangible and demonstrate value immediately.
+*   **Proposal Strategy:** A dual-strategy is employed:
+    1.  **High-Level Visual Pitch:** A concise, visually-driven HTML proposal generated in minutes by AI, perfect for initial conversations to capture imagination and maintain momentum.
+    2.  **Detailed Deep-Dive:** A comprehensive document for clients ready to discuss specifics, detailing scope, investment, and timelines.
+
+### **6.3. Lead Generation**
+
+*   **"Pioneer" Website Functionality:** A concept for a lead-generation tool on the LongevAI website where a user can input their industry/process and email to receive an AI-generated analysis of potential use cases.
+*   **LinkedIn Content:** An automated engine is being built to generate high-quality LinkedIn posts by scraping relevant news and using custom prompts, ensuring a consistent and engaging brand presence.

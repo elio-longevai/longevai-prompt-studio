@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Define base colors - Using LongevAI Light Green */
+    --background: 240 10% 3.9%; /* Almost Black */
+    --foreground: 210 20% 98%; /* Light Gray */
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 210 20% 98%;
+
+    /* LongevAI Green - Adjust HSL values for desired shade */
+    /* Example: A vibrant light green */
+    --primary: 140 70% 60%; /* HSL: Hue 140 (Green), Saturation 70%, Lightness 60% */
+    --primary-foreground: 240 10% 3.9%; /* Almost Black for contrast on light green */
+
+    --secondary: 240 5% 10%; /* Darker Gray */
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 240 5% 10%;
+    --muted-foreground: 220 8.9% 46.1%; /* Lighter Gray */
+
+    --accent: 240 5% 10%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62.8% 30.6%; /* Darker Red */
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 240 5% 15%; /* Slightly lighter dark border */
+    --input: 240 5% 10%;
+    --ring: 140 70% 70%; /* Lighter green for focus ring */
+
+    --radius: 0.75rem; /* Slightly larger radius */
+  }
+
+  /* Apply dark mode variables directly if needed, but defaults are set for dark */
+  .dark {
+     /* Same as :root for this always-dark example */
+    --background: 240 10% 3.9%;
+    --foreground: 210 20% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 210 20% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 140 70% 60%;
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 240 5% 10%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 240 5% 10%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 240 5% 10%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 240 5% 15%;
+    --input: 240 5% 10%;
+    --ring: 140 70% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1; /* Enable common ligatures */
+  }
+  /* Apply the Inter font variable from layout.tsx */
+  html {
+    font-family: var(--font-inter), sans-serif;
+  }
+
+  /* Custom Scrollbar Styling */
+  /* For Webkit browsers (Chrome, Safari) */
+  ::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+    height: 8px; /* Height for horizontal scrollbars */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Make track invisible */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary) / 0.3); /* Semi-transparent primary color */
+    border-radius: 10px; /* Rounded corners */
+    border: 2px solid transparent; /* Creates padding around thumb */
+    background-clip: content-box; /* Ensures border doesn't overlap thumb color */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary) / 0.5); /* Darker on hover */
+  }
+
+  /* For Firefox */
+  /* Note: Firefox scrollbar styling is less customizable */
+  * {
+    scrollbar-width: thin; /* "auto" or "thin" */
+    scrollbar-color: hsl(var(--primary) / 0.5) transparent; /* thumb color track color */
+  }
+
+}
+
+/* Custom Prose Styles for Markdown in Chat Bubbles */
+/* Applied via className in MarkdownRenderer */
+.prose-invert {
+  --tw-prose-body: theme('colors.gray.300');
+  --tw-prose-headings: theme('colors.gray.100');
+  --tw-prose-lead: theme('colors.gray.400');
+  --tw-prose-links: hsl(var(--primary)); /* Use primary color for links */
+  --tw-prose-bold: theme('colors.gray.100');
+  --tw-prose-counters: theme('colors.gray.400');
+  --tw-prose-bullets: hsl(var(--primary) / 0.6); /* Primary color bullets */
+  --tw-prose-hr: theme('colors.gray.700');
+  --tw-prose-quotes: theme('colors.gray.100');
+  --tw-prose-quote-borders: hsl(var(--primary) / 0.5); /* Primary quote border */
+  --tw-prose-captions: theme('colors.gray.400');
+  --tw-prose-code: #fff;
+  --tw-prose-pre-code: theme('colors.gray.300');
+  --tw-prose-pre-bg: theme('colors.gray.800 / 0.7'); /* Background for code blocks */
+  --tw-prose-th-borders: theme('colors.gray.600');
+  --tw-prose-td-borders: theme('colors.gray.700');
+}
+
+/* Reduce default prose margins/paddings for chat */
+.prose-sm p,
+.prose-sm ul,
+.prose-sm ol,
+.prose-sm blockquote,
+.prose-sm pre,
+.prose-sm table {
+  @apply my-2; /* Reduced vertical margin */
+}
+.prose-sm h1,
+.prose-sm h2,
+.prose-sm h3,
+.prose-sm h4 {
+   @apply mt-3 mb-1; /* Tighter heading margins */
+}
+.prose-sm :first-child {
+    @apply mt-0;
+}
+.prose-sm :last-child {
+    @apply mb-0;
+}
+
+/* Ensure container max-width is consistent if needed */
+.container {
+  max-width: 1400px; /* Adjust as needed */
+}

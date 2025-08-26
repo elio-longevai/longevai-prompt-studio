@@ -1,0 +1,73 @@
+[
+  {
+    "id": "slide-generator",
+    "title": "Slide Generator",
+    "description": "Generate a new slide deck for LongevAI projects.",
+    "icon": "Presentation",
+    "system_prompt": "You are an expert programmer.\nYour task is to create an exceptional prompt for my AI coder that I can provide it without additional context to implement the task defined in the user instructions into the provided slide template codebase. This prompt should only contain the high-level goal as well as the changes to be made, not full code files.\nBefore generating this prompt, if required, ask me the top 3 potentially relevant questions you need to come to the best possible output.\nDon't generate a preamble or other surrounding text, only return the prompt OR the questions.",
+    "inputs": [
+      { "id": "task", "label": "Task / Goal of Slides", "type": "textarea", "placeholder": "e.g., Create a 5-slide presentation on our Q3 roadmap...", "required": true },
+      { "id": "context_docs", "label": "Context Documents", "type": "document_upload", "required": false }
+    ],
+    "output": {
+      "copy_button_text": "Copy Coder Prompt",
+      "link_button_text": "View on GitHub",
+      "url": "https://github.com/elioverhoef/longevity-ai-deck-craft/"
+    }
+  },
+  {
+    "id": "email-generator",
+    "title": "E-mail Generator",
+    "description": "Generate professional e-mails with LongevAI branding.",
+    "icon": "Mail",
+    "system_prompt": "You are an expert e-mail writer. Generate an e-mail in HTML format based on the user instructions. The main LongevAI color (for headers) is #8CC63F.",
+    "inputs": [
+      { "id": "previous_emails", "label": "Previous E-mails (for context)", "type": "textarea", "placeholder": "Paste the thread of previous emails here...", "required": false },
+      { "id": "writing_style_examples", "label": "Example E-mails (for writing style)", "type": "textarea", "placeholder": "Paste examples of emails that have the desired tone...", "required": false },
+      { "id": "context_docs", "label": "Other Context Documents", "type": "document_upload", "required": false },
+      { "id": "task", "label": "Task / Goal of E-mail", "type": "textarea", "placeholder": "e.g., Write a follow-up email to John Doe about our proposal...", "required": true }
+    ],
+    "output": {
+      "copy_button_text": "Copy E-mail HTML",
+      "link_button_text": "Open in Claude",
+      "url": "https://claude.ai"
+    }
+  },
+  {
+    "id": "proposal-generator",
+    "title": "Proposal Generator (HTML)",
+    "description": "Generate high-level initial HTML proposals.",
+    "icon": "FileText",
+    "system_prompt": "You will receive a user prompt and a proposal template from another project. Create an exceptional, updated proposal in HTML format based on the user instructions and this template.",
+    "inputs": [
+      { "id": "modules", "label": "What to show in this overview?", "type": "textarea", "placeholder": "e.g., Include the data analytics module and the user dashboard.", "required": true },
+      { "id": "template", "label": "What template to use?", "type": "select", "options": ["MAA", "Ayusha", "Uma", "QualeVita (MD)", "MyActiveAge (MD)"], "required": true },
+      { "id": "business_name", "label": "Business Name", "type": "text", "placeholder": "e.g., Example Corp", "required": true },
+      { "id": "business_context", "label": "Business Context", "type": "textarea", "placeholder": "Provide some background on the business and their needs.", "required": true },
+      { "id": "context_docs", "label": "Other Context Documents", "type": "document_upload", "required": false }
+    ],
+    "output": {
+      "copy_button_text": "Copy Proposal HTML",
+      "link_button_text": "Open in AI Studio",
+      "url": "https://aistudio.google.com/prompts/new_chat"
+    }
+  },
+  {
+    "id": "meeting-summarizer",
+    "title": "Meeting Summarizer",
+    "description": "Summarize Fathom meeting transcripts beautifully.",
+    "icon": "Users",
+    "system_prompt": "Summarize this meeting exceptionally well using stunning, beautiful markdown formatting including emojis and tables. Create a list of action points at the end of the summary in a table, including deadlines and owners. The summary detail level should be {{COMPREHENSIVENESS}}.",
+    "inputs": [
+      { "id": "transcript", "label": "Transcript of Meeting", "type": "textarea", "placeholder": "Paste the full meeting transcript here...", "required": true },
+      { "id": "comprehensiveness", "label": "How comprehensive?", "type": "select", "options": ["Balanced", "Comprehensive", "Concise"], "default": "Balanced", "required": true },
+      { "id": "new_names", "label": "New Names (Companies, people, tech)", "type": "textarea", "placeholder": "List any new names not in the LongevAI knowledge base to ensure correct transcription.", "required": false },
+      { "id": "example_output", "label": "Example Output Format", "type": "textarea", "placeholder": "Describe the desired output format or provide a structural example.", "required": false }
+    ],
+    "output": {
+      "copy_button_text": "Copy Summary Prompt",
+      "link_button_text": "Open in AI Studio",
+      "url": "https://aistudio.google.com/prompts/new_chat"
+    }
+  }
+]
