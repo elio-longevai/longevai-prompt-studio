@@ -245,6 +245,17 @@ export default function GeneratorPage() {
     setTimeout(() => setShowToast(false), 5000);
   };
 
+  // Function to clean up markdown code fences from the response
+  const cleanMarkdownCodeFences = (text: string): string => {
+    return text
+      // Remove opening code fences (```html, ```javascript, ```, etc.)
+      .replace(/^```\w*\n?/gm, '')
+      // Remove closing code fences
+      .replace(/\n?```$/gm, '')
+      // Remove any remaining standalone ``` lines
+      .replace(/^```$/gm, '');
+  };
+
   const handleExecutePrompt = async () => {
     setIsExecuting(true);
     setLlmResponse('');
@@ -272,12 +283,17 @@ export default function GeneratorPage() {
         throw new Error('Response body is not readable');
       }
 
+      let accumulator = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
         const chunk = decoder.decode(value);
-        setLlmResponse(prev => prev + chunk);
+        accumulator += chunk;
+        
+        // Clean up markdown code fences and update the response
+        const cleanedResponse = cleanMarkdownCodeFences(accumulator);
+        setLlmResponse(cleanedResponse);
       }
     } catch (error) {
       console.error('Execute prompt error:', error);
