@@ -385,7 +385,7 @@ export default function GeneratorPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2, type: 'spring', damping: 30 }}
+            transition={{ duration: 0.1, type: 'spring', damping: 30 }}
           >
             <motion.div
               whileHover={{ x: -2 }}
@@ -415,7 +415,7 @@ export default function GeneratorPage() {
                         className="text-4xl font-bold mb-3"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.15 }}
+                        transition={{ duration: 0.05 }}
                       >
                         <span className="bg-gradient-to-r from-gray-100 to-gray-200 bg-clip-text text-transparent">
                           {tileData.title}
@@ -426,7 +426,7 @@ export default function GeneratorPage() {
                         className="text-gray-300 text-lg leading-relaxed"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1, duration: 0.15 }}
+                        transition={{ delay: 0, duration: 0.05 }}
                       >
                         {tileData.description}
                       </motion.p>
@@ -439,7 +439,7 @@ export default function GeneratorPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15, duration: 0.2 }}
+                  transition={{ delay: 0, duration: 0.1 }}
                 >
                   <GeneratorForm
                     inputs={tileData.inputs}
@@ -459,7 +459,7 @@ export default function GeneratorPage() {
                   className="flex items-center justify-center py-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.25, duration: 0.2 }}
+                  transition={{ delay: 0, duration: 0.1 }}
                 >
                   <label className="relative inline-flex items-center cursor-pointer group">
                     <input
@@ -479,7 +479,7 @@ export default function GeneratorPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.2 }}
+                  transition={{ delay: 0, duration: 0.1 }}
                   className="flex gap-4"
                 >
                   <motion.div

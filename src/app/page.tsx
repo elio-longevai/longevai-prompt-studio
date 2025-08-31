@@ -17,8 +17,8 @@ export default function HomePage() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.1
+        staggerChildren: 0,
+        delayChildren: 0
       }
     }
   };
