@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import tilesData from '@/data/tiles.json';
 import { templateLoader } from '@/lib/templateLoader';
 import { ProposalTypeSelector } from '@/components/studio/ProposalTypeSelector';
 import { GeneratorForm, TileInput } from '@/components/studio/GeneratorForm';
 import { ToastNotification } from '@/components/studio/ToastNotification';
 import { Document } from '@/components/studio/DocumentUploader';
+import { LLMResponseDisplay } from '@/components/studio/LLMResponseDisplay';
 
 interface TileData {
   id: string;
@@ -44,6 +45,9 @@ export default function GeneratorPage() {
   const [templateContent, setTemplateContent] = useState<string>('');
   const [isTemplateLoading, setIsTemplateLoading] = useState(false);
   const [templateError, setTemplateError] = useState<string | null>(null);
+  const [llmResponse, setLlmResponse] = useState<string>('');
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionError, setExecutionError] = useState<string | null>(null);
 
   useEffect(() => {
     const tile = tilesData.find((t) => t.id === params.id);
@@ -148,8 +152,8 @@ export default function GeneratorPage() {
     });
   };
 
-  const generatePrompt = () => {
-    if (!tileData) return;
+  const generatePrompt = (): string => {
+    if (!tileData) return '';
 
     let finalPrompt = '';
 
@@ -231,10 +235,56 @@ export default function GeneratorPage() {
       finalPrompt += `<${mainInstructionId}>\n${formData[mainInstructionId]}\n</${mainInstructionId}>\n`;
     }
 
-    // 7. Copy to clipboard and show toast
-    navigator.clipboard.writeText(finalPrompt.trim());
+    return finalPrompt.trim();
+  };
+
+  const handleCopyPrompt = () => {
+    const prompt = generatePrompt();
+    navigator.clipboard.writeText(prompt);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 5000);
+  };
+
+  const handleExecutePrompt = async () => {
+    setIsExecuting(true);
+    setLlmResponse('');
+    setExecutionError(null);
+
+    try {
+      const prompt = generatePrompt();
+      
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        setLlmResponse(prev => prev + chunk);
+      }
+    } catch (error) {
+      console.error('Execute prompt error:', error);
+      setExecutionError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setIsExecuting(false);
+    }
   };
 
   if (!tileData) {
@@ -401,31 +451,73 @@ export default function GeneratorPage() {
                   </label>
                 </motion.div>
 
-                {/* Enhanced Generate Button */}
+                {/* Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                  className="flex gap-4"
                 >
-                  <Button
-                    onClick={generatePrompt}
-                    disabled={!isFormValid()}
-                    className="relative w-full bg-gradient-to-r from-primary to-green-400 hover:from-green-400 hover:to-primary text-black font-bold text-lg py-4 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group shadow-lg hover:shadow-xl hover:shadow-primary/20"
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    className="flex-1"
                   >
-                    {/* Subtle shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
-                    
-                    <span className="relative flex items-center justify-center gap-2">
-                      <Sparkles className="w-5 h-5" />
+                    <Button
+                      onClick={handleExecutePrompt}
+                      disabled={!isFormValid() || isExecuting}
+                      className="relative w-full bg-gradient-to-r from-primary to-green-400 hover:from-green-400 hover:to-primary text-black font-bold text-lg py-4 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group shadow-lg hover:shadow-xl hover:shadow-primary/20"
+                    >
+                      {/* Subtle shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      
+                      <span className="relative flex items-center justify-center gap-2">
+                        {isExecuting ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-5 h-5" />
+                        )}
+                        {isExecuting ? 'Executing...' : 'Execute Prompt'}
+                      </span>
+                    </Button>
+                  </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                  >
+                    <Button
+                      onClick={handleCopyPrompt}
+                      disabled={!isFormValid()}
+                      variant="outline"
+                      className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 rounded-2xl px-6 py-4"
+                    >
                       Generate Prompt
-                    </span>
-                  </Button>
+                    </Button>
+                  </motion.div>
                 </motion.div>
               </Card>
             </motion.div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* LLM Response Display */}
+        <AnimatePresence>
+          {(isExecuting || llmResponse || executionError) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="mt-6"
+            >
+              <LLMResponseDisplay
+                response={llmResponse}
+                isLoading={isExecuting}
+                error={executionError}
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
 
         <ToastNotification
