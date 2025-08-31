@@ -9,7 +9,6 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import tilesData from '@/data/tiles.json';
 import { templateLoader } from '@/lib/templateLoader';
-import { ProposalTypeSelector } from '@/components/studio/ProposalTypeSelector';
 import { GeneratorForm, TileInput } from '@/components/studio/GeneratorForm';
 import { ToastNotification } from '@/components/studio/ToastNotification';
 import { Document } from '@/components/studio/DocumentUploader';
@@ -20,17 +19,18 @@ interface TileData {
   title: string;
   description: string;
   icon: string;
-  system_prompt?: string;
-  system_prompts?: {
-    html?: string;
-    markdown?: string;
-  };
+  system_prompt: string;
   inputs: TileInput[];
   output: {
     copy_button_text: string;
     link_button_text: string;
     url: string;
   };
+}
+
+interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 export default function GeneratorPage() {
@@ -41,7 +41,8 @@ export default function GeneratorPage() {
   const [includeLAIContext, setIncludeLAIContext] = useState(true);
   const [showToast, setShowToast] = useState(false);
   const [longevaiContextContent, setLongevaiContextContent] = useState<string>('');
-  const [selectedProposalType, setSelectedProposalType] = useState<'html' | 'markdown' | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
+  const [refinementInput, setRefinementInput] = useState<string>('');
   const [templateContent, setTemplateContent] = useState<string>('');
   const [isTemplateLoading, setIsTemplateLoading] = useState(false);
   const [templateError, setTemplateError] = useState<string | null>(null);
@@ -74,15 +75,15 @@ export default function GeneratorPage() {
   }, [params.id]);
 
   useEffect(() => {
-    if (params.id === 'proposal-generator' && selectedProposalType) {
-      const templateId = selectedProposalType === 'html' ? 'html_template' : 'md_template';
+    if (params.id === 'proposal-generator' || params.id === 'html-overview-generator') {
+      const templateId = params.id === 'html-overview-generator' ? 'html_template' : 'md_template';
       const defaultTemplateName = formData[templateId];
       if (defaultTemplateName) {
         loadTemplateContent(defaultTemplateName);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProposalType, params.id]);
+  }, [params.id, formData.html_template, formData.md_template]);
 
   const handleInputChange = (id: string, value: string) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -138,14 +139,8 @@ export default function GeneratorPage() {
 
   const isFormValid = () => {
     if (!tileData) return false;
-    if (params.id === 'proposal-generator' && !selectedProposalType) return false;
     
-    const relevantInputs = tileData.inputs.filter((input) => {
-      if (params.id !== 'proposal-generator') return true;
-      return input.path === 'both' || input.path === selectedProposalType;
-    });
-    
-    return relevantInputs.every((input) => {
+    return tileData.inputs.every((input) => {
       if (!input.required) return true;
       if (input.type === 'document_upload') return true;
       return formData[input.id] && formData[input.id].trim() !== '';
@@ -158,12 +153,7 @@ export default function GeneratorPage() {
     let finalPrompt = '';
 
     // 1. Get and format the system prompt
-    let systemPromptContent = '';
-    if (params.id === 'proposal-generator' && selectedProposalType) {
-      systemPromptContent = tileData.system_prompts?.[selectedProposalType] || '';
-    } else {
-      systemPromptContent = tileData.system_prompt || '';
-    }
+    let systemPromptContent = tileData.system_prompt || '';
 
     // Replace any placeholders within the system prompt
     Object.keys(formData).forEach((key) => {
@@ -183,13 +173,14 @@ export default function GeneratorPage() {
     }
 
     // 3. Add proposal templates if applicable
-    if (params.id === 'proposal-generator' && selectedProposalType) {
-      const template = selectedProposalType === 'html'
+    if (params.id === 'proposal-generator' || params.id === 'html-overview-generator') {
+      const isHtml = params.id === 'html-overview-generator';
+      const template = isHtml
         ? formData.custom_html_template || templateContent
         : formData.custom_md_template || templateContent;
       
-      const templateTag = selectedProposalType === 'html' ? 'base_html_template' : 'markdown_template';
-      const useCdata = selectedProposalType === 'html';
+      const templateTag = isHtml ? 'base_html_template' : 'markdown_template';
+      const useCdata = isHtml;
 
       if (template) {
         finalPrompt += `<${templateTag}>\n${useCdata ? '<![CDATA[\n' : ''}${template}${useCdata ? '\n]]>\n' : ''}\n</${templateTag}>\n\n`;
@@ -205,12 +196,7 @@ export default function GeneratorPage() {
       'md_template', 'custom_md_template'      // Handled in templates
     ]);
     
-    const relevantInputs = tileData.inputs.filter(input => {
-      if (params.id !== 'proposal-generator') return true;
-      return input.path === 'both' || input.path === selectedProposalType;
-    });
-
-    relevantInputs.forEach((input) => {
+    tileData.inputs.forEach((input) => {
       if (!specialInputIds.has(input.id) && input.type !== 'document_upload' && formData[input.id]) {
         finalPrompt += `<${input.id}>\n${formData[input.id]}\n</${input.id}>\n\n`;
       }
@@ -260,6 +246,8 @@ export default function GeneratorPage() {
     setIsExecuting(true);
     setLlmResponse('');
     setExecutionError(null);
+    setConversationHistory([]);
+    setRefinementInput('');
 
     try {
       const prompt = generatePrompt();
@@ -295,6 +283,12 @@ export default function GeneratorPage() {
         const cleanedResponse = cleanMarkdownCodeFences(accumulator);
         setLlmResponse(cleanedResponse);
       }
+      
+      // Add to conversation history
+      setConversationHistory([
+        { role: 'user', content: prompt },
+        { role: 'assistant', content: cleanMarkdownCodeFences(accumulator) }
+      ]);
     } catch (error) {
       console.error('Execute prompt error:', error);
       setExecutionError(error instanceof Error ? error.message : 'An unknown error occurred');
@@ -316,27 +310,67 @@ export default function GeneratorPage() {
     );
   }
 
-  // Proposal Generator: Show type selector first
-  if (params.id === 'proposal-generator' && !selectedProposalType) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Link href="/">
-            <Button variant="ghost" className="mb-2 text-gray-400 hover:text-primary">
-              <ArrowLeft className="mr-2 w-4 h-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
+  const handleRefinePrompt = async () => {
+    if (!refinementInput.trim()) return;
+    
+    setIsExecuting(true);
+    setExecutionError(null);
 
-          <ProposalTypeSelector onTypeSelect={setSelectedProposalType} />
-        </motion.div>
-      </div>
-    );
-  }
+    try {
+      // Construct a conversation with history and new refinement
+      const messages = [
+        ...conversationHistory,
+        { role: 'user' as const, content: refinementInput }
+      ];
+      
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          conversationHistory: messages,
+          systemPrompt: tileData.system_prompt 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
+
+      let accumulator = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        accumulator += chunk;
+        
+        // Clean up markdown code fences and update the response
+        const cleanedResponse = cleanMarkdownCodeFences(accumulator);
+        setLlmResponse(cleanedResponse);
+      }
+      
+      // Update conversation history
+      setConversationHistory([
+        ...messages,
+        { role: 'assistant', content: cleanMarkdownCodeFences(accumulator) }
+      ]);
+      setRefinementInput('');
+    } catch (error) {
+      console.error('Refine prompt error:', error);
+      setExecutionError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setIsExecuting(false);
+    }
+  };
 
   return (
     <div className="relative min-h-full">
@@ -351,14 +385,14 @@ export default function GeneratorPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, type: 'spring', damping: 25 }}
+            transition={{ duration: 0.2, type: 'spring', damping: 30 }}
           >
             <motion.div
               whileHover={{ x: -2 }}
               className="mb-4"
             >
               <Link href="/">
-                <Button variant="ghost" className="text-gray-400 hover:text-primary hover:bg-primary/5 transition-all duration-300 rounded-full px-4 py-2">
+                <Button variant="ghost" className="text-gray-400 hover:text-primary hover:bg-primary/5 transition-all duration-150 rounded-full px-4 py-2">
                   <ArrowLeft className="mr-2 w-4 h-4" />
                   Back to Dashboard
                 </Button>
@@ -367,11 +401,11 @@ export default function GeneratorPage() {
 
             <motion.div
               whileHover={{ y: -2 }}
-              transition={{ type: 'spring', damping: 25 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             >
               <Card className="relative bg-gray-800/60 backdrop-blur-lg border border-gray-700/50 hover:border-primary/40 rounded-3xl p-10 overflow-hidden group">
                 {/* Subtle hover glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
                 
                 {/* Header Section */}
                 <div className="relative mb-4">
@@ -381,48 +415,23 @@ export default function GeneratorPage() {
                         className="text-4xl font-bold mb-3"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
+                        transition={{ duration: 0.15 }}
                       >
                         <span className="bg-gradient-to-r from-gray-100 to-gray-200 bg-clip-text text-transparent">
                           {tileData.title}
                         </span>
-                        {params.id === 'proposal-generator' && selectedProposalType && (
-                          <motion.span 
-                            className="block text-xl text-primary mt-1"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                          >
-                            {selectedProposalType === 'html' ? '✨ HTML Overview' : '📄 Markdown Proposal'}
-                          </motion.span>
-                        )}
                       </motion.h1>
                       
                       <motion.p 
                         className="text-gray-300 text-lg leading-relaxed"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
+                        transition={{ delay: 0.1, duration: 0.15 }}
                       >
                         {tileData.description}
                       </motion.p>
                     </div>
                     
-                    {params.id === 'proposal-generator' && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <Button
-                          variant="outline" 
-                          onClick={() => setSelectedProposalType(null)}
-                          className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 rounded-full"
-                        >
-                          Change Type
-                        </Button>
-                      </motion.div>
-                    )}
                   </div>
                 </div>
 
@@ -430,13 +439,12 @@ export default function GeneratorPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.15, duration: 0.2 }}
                 >
                   <GeneratorForm
                     inputs={tileData.inputs}
                     formData={formData}
                     documents={documents}
-                    selectedProposalType={selectedProposalType}
                     isTemplateLoading={isTemplateLoading}
                     templateError={templateError}
                     onInputChange={handleInputChange}
@@ -451,7 +459,7 @@ export default function GeneratorPage() {
                   className="flex items-center justify-center py-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.25, duration: 0.2 }}
                 >
                   <label className="relative inline-flex items-center cursor-pointer group">
                     <input
@@ -471,7 +479,7 @@ export default function GeneratorPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
+                  transition={{ delay: 0.3, duration: 0.2 }}
                   className="flex gap-4"
                 >
                   <motion.div
@@ -482,10 +490,10 @@ export default function GeneratorPage() {
                     <Button
                       onClick={handleExecutePrompt}
                       disabled={!isFormValid() || isExecuting}
-                      className="relative w-full bg-gradient-to-r from-primary to-green-400 hover:from-green-400 hover:to-primary text-black font-bold text-lg py-4 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group shadow-lg hover:shadow-xl hover:shadow-primary/20"
+                      className="relative w-full bg-gradient-to-r from-primary to-green-400 hover:from-green-400 hover:to-primary text-black font-bold text-lg py-4 rounded-2xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group shadow-lg hover:shadow-xl hover:shadow-primary/20"
                     >
                       {/* Subtle shine effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-out" />
                       
                       <span className="relative flex items-center justify-center gap-2">
                         {isExecuting ? (
@@ -506,7 +514,7 @@ export default function GeneratorPage() {
                       onClick={handleCopyPrompt}
                       disabled={!isFormValid()}
                       variant="outline"
-                      className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 rounded-2xl px-6 py-4"
+                      className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-150 rounded-2xl px-6 py-4"
                     >
                       Generate Prompt
                     </Button>
@@ -524,13 +532,17 @@ export default function GeneratorPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.15 }}
               className="mt-6"
             >
               <LLMResponseDisplay
                 response={llmResponse}
                 isLoading={isExecuting}
                 error={executionError}
+                refinementInput={refinementInput}
+                onRefinementInputChange={setRefinementInput}
+                onRefine={handleRefinePrompt}
+                isRefinementDisabled={!refinementInput.trim() || isExecuting}
               />
             </motion.div>
           )}

@@ -68,18 +68,14 @@
     }
   },
   {
-    "id": "proposal-generator",
-    "title": "Proposal Generator",
-    "description": "Generate HTML overviews or detailed Markdown proposals.",
-    "icon": "FileText",
-    "system_prompts": {
-      "html": "You are an expert web developer and copywriter. You will be given a base HTML proposal template and user instructions. Your task is to update the HTML to reflect the user's needs for a new client, focusing on the specified modules. Maintain the existing high-quality design and styling. Your final output should be only the complete, updated HTML code. Do not include any preamble or other surrounding text.",
-      "markdown": "You are a senior business strategist and proposal writer. You will receive a detailed Markdown proposal template and specific instructions for a new client. Your task is to thoroughly adapt the template to create a new, comprehensive, and persuasive proposal with appropriate modules in a logical order. Modify sections, rewrite content, and ensure the final document is perfectly tailored to the new client's context. Your final output should be only the raw, updated Markdown."
-    },
+    "id": "html-overview-generator",
+    "title": "HTML Overview Generator",
+    "description": "Generate high-level, visually appealing HTML proposals.",
+    "icon": "Code",
+    "system_prompt": "You are an expert web developer and copywriter. You will be given a base HTML proposal template and user instructions. Your task is to update the HTML to reflect the user's needs for a new client, focusing on the specified modules. Maintain the existing high-quality design and styling. Your final output should be only the complete, updated HTML code. Do not include any preamble or other surrounding text.",
     "inputs": [
       {
         "id": "business_name",
-        "path": "both",
         "label": "Business Name",
         "type": "text",
         "placeholder": "e.g., Example Corp",
@@ -87,7 +83,6 @@
       },
       {
         "id": "business_context",
-        "path": "both",
         "label": "Business Context",
         "type": "textarea",
         "placeholder": "Provide some background on the business and their needs.",
@@ -95,7 +90,6 @@
       },
       {
         "id": "html_template",
-        "path": "html",
         "label": "Select HTML Template",
         "type": "select",
         "options": [
@@ -108,15 +102,54 @@
       },
       {
         "id": "custom_html_template",
-        "path": "html",
         "label": "Custom HTML Template (Optional)",
         "type": "textarea",
         "placeholder": "Paste your own complete HTML template here to override the default.",
         "required": false
       },
       {
+        "id": "context_docs",
+        "label": "Other Context Documents",
+        "type": "document_upload",
+        "required": false
+      },
+      {
+        "id": "instructions",
+        "label": "Detailed Instructions & Context for proposal",
+        "type": "textarea",
+        "placeholder": "Provide all necessary context, changes, and client details to adapt the selected template...",
+        "required": true
+      }
+    ],
+    "output": {
+      "copy_button_text": "Copy Proposal Prompt",
+      "link_button_text": "Open in AI Studio",
+      "url": "https://aistudio.google.com/prompts/new_chat"
+    }
+  },
+  {
+    "id": "proposal-generator",
+    "title": "Proposal Generator",
+    "description": "Create comprehensive, detailed Markdown proposals.",
+    "icon": "FileText",
+    "system_prompt": "You are a senior business strategist and proposal writer. You will receive a detailed Markdown proposal template and specific instructions for a new client. Your task is to thoroughly adapt the template to create a new, comprehensive, and persuasive proposal with appropriate modules in a logical order. Modify sections, rewrite content, and ensure the final document is perfectly tailored to the new client's context. Your final output should be only the raw, updated Markdown.",
+    "inputs": [
+      {
+        "id": "business_name",
+        "label": "Business Name",
+        "type": "text",
+        "placeholder": "e.g., Example Corp",
+        "required": true
+      },
+      {
+        "id": "business_context",
+        "label": "Business Context",
+        "type": "textarea",
+        "placeholder": "Provide some background on the business and their needs.",
+        "required": true
+      },
+      {
         "id": "md_template",
-        "path": "markdown",
         "label": "Select Markdown Template",
         "type": "select",
         "options": [
@@ -129,7 +162,6 @@
       },
       {
         "id": "custom_md_template",
-        "path": "markdown",
         "label": "Custom Markdown Template (Optional)",
         "type": "textarea",
         "placeholder": "Paste your own complete Markdown template here to override the default.",
@@ -137,14 +169,12 @@
       },
       {
         "id": "context_docs",
-        "path": "both",
         "label": "Other Context Documents",
         "type": "document_upload",
         "required": false
       },
       {
         "id": "instructions",
-        "path": "both",
         "label": "Detailed Instructions & Context for proposal",
         "type": "textarea",
         "placeholder": "Provide all necessary context, changes, and client details to adapt the selected template...",

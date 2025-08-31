@@ -11,7 +11,6 @@ export interface TileInput {
   placeholder?: string;
   required?: boolean;
   options?: string[];
-  path?: 'html' | 'markdown' | 'both';
   default?: string;
 }
 
@@ -19,7 +18,7 @@ interface GeneratorFormProps {
   inputs: TileInput[];
   formData: Record<string, string>;
   documents: Document[];
-  selectedProposalType?: 'html' | 'markdown' | null;
+  selectedProposalType?: 'html' | 'markdown' | null;  // Kept for backward compatibility but unused
   isTemplateLoading?: boolean;
   templateError?: string | null;
   onInputChange: (id: string, value: string) => void;
@@ -32,22 +31,16 @@ export function GeneratorForm({
   inputs,
   formData,
   documents,
-  selectedProposalType,
   isTemplateLoading,
   templateError,
   onInputChange,
   onAddDocument,
   onRemoveDocument,
   onDocumentChange
-}: GeneratorFormProps) {
+}: Omit<GeneratorFormProps, 'selectedProposalType'>) {
   return (
     <div className="space-y-6">
-      {inputs
-        .filter((input) => {
-          if (!selectedProposalType || !('path' in input)) return true;
-          return input.path === 'both' || input.path === selectedProposalType;
-        })
-        .map((input) => {
+      {inputs.map((input) => {
           // Hide custom template fields unless 'custom' is selected
           if ((input.id === 'custom_html_template' && formData.html_template !== 'custom') ||
               (input.id === 'custom_md_template' && formData.md_template !== 'custom')) {

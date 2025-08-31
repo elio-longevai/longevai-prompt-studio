@@ -22,6 +22,7 @@ export function ToastNotification({
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
+          transition={{ duration: 0.15, type: 'spring', damping: 30 }}
           className="fixed bottom-8 right-8 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-4 z-50"
         >
           <Check className="w-5 h-5" />

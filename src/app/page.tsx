@@ -17,8 +17,8 @@ export default function HomePage() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.3
+        staggerChildren: 0.05,
+        delayChildren: 0.1
       }
     }
   };
@@ -31,8 +31,8 @@ export default function HomePage() {
       scale: 1,
       transition: {
         type: 'spring' as const,
-        damping: 20,
-        stiffness: 350
+        damping: 25,
+        stiffness: 500
       }
     }
   };
@@ -77,7 +77,7 @@ export default function HomePage() {
           <motion.h1 
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.3 }}
             className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight"
           >
             <span className="bg-gradient-to-r from-primary via-green-300 to-emerald-400 bg-clip-text text-transparent">
@@ -91,7 +91,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary/10 to-green-400/10 rounded-full border border-primary/20 backdrop-blur-sm"
           >
             <Sparkles className="w-4 h-4 text-primary" />
@@ -115,6 +115,7 @@ export default function HomePage() {
             else if (tile.icon === 'Mail') IconComponent = Icons.Mail;
             else if (tile.icon === 'FileText') IconComponent = Icons.FileText;
             else if (tile.icon === 'Users') IconComponent = Icons.Users;
+            else if (tile.icon === 'Code') IconComponent = Icons.Code;
             
             return (
               <motion.div key={tile.id} variants={item}>
@@ -122,38 +123,38 @@ export default function HomePage() {
                   <motion.div
                     whileHover={{ 
                       y: -6,
-                      transition: { type: 'spring', damping: 25, stiffness: 400 }
+                      transition: { type: 'spring', damping: 30, stiffness: 500 }
                     }}
                     whileTap={{ scale: 0.98 }}
                     className="h-full"
                   >
-                    <Card className="relative p-8 h-full bg-gray-800/50 backdrop-blur-md border border-gray-700/50 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl cursor-pointer group overflow-hidden">
+                    <Card className="relative p-8 h-full bg-gray-800/50 backdrop-blur-md border border-gray-700/50 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-200 rounded-3xl cursor-pointer group overflow-hidden">
                       {/* Enhanced hover effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       
                       {/* Subtle shimmer effect */}
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 ease-out" />
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-500 ease-out" />
                       
                       <div className="relative flex flex-col items-center text-center space-y-6">
                         <motion.div 
-                          className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 rounded-2xl group-hover:from-primary/25 group-hover:to-primary/10 transition-all duration-300"
+                          className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 rounded-2xl group-hover:from-primary/25 group-hover:to-primary/10 transition-all duration-150"
                           whileHover={{ 
                             scale: 1.05,
-                            transition: { type: 'spring', damping: 15 }
+                            transition: { type: 'spring', damping: 20, stiffness: 400 }
                           }}
                         >
-                          <IconComponent className="w-12 h-12 text-primary group-hover:text-green-300 transition-colors duration-300" />
+                          <IconComponent className="w-12 h-12 text-primary group-hover:text-green-300 transition-colors duration-150" />
                           
                           {/* Icon glow effect */}
-                          <div className="absolute inset-0 bg-primary/15 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+                          <div className="absolute inset-0 bg-primary/15 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-150" />
                         </motion.div>
                         
                         <div className="space-y-3">
-                          <h3 className="text-xl font-bold text-gray-100 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-green-300 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                          <h3 className="text-xl font-bold text-gray-100 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-green-300 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-150">
                             {tile.title}
                           </h3>
                           
-                          <p className="text-gray-400 group-hover:text-gray-300 leading-relaxed transition-colors duration-300">
+                          <p className="text-gray-400 group-hover:text-gray-300 leading-relaxed transition-colors duration-150">
                             {tile.description}
                           </p>
                         </div>
@@ -163,7 +164,7 @@ export default function HomePage() {
                           className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full opacity-0 group-hover:opacity-100"
                           initial={{ scale: 0 }}
                           whileHover={{ scale: 1 }}
-                          transition={{ type: 'spring', damping: 15 }}
+                          transition={{ type: 'spring', damping: 20, stiffness: 400 }}
                         />
                       </div>
                     </Card>
